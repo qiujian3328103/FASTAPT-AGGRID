@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}SWLY Tracking{% endblock %}
+{% block head %}
+    {{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+{% include 'include/sidebar.html' %}
+
+<main role="main">
+    <div class="row">
+        <div class="col">
+            <h1>CSV Viewer</h1>
+            <form action="/form_submit" method="post">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="processId">Process ID</label>
+                        <select id="processId" class="form-control select2" name="processIds" multiple>
+                            {% for process_id in initial_data.process_ids %}
+                                {% if process_id in initial_data.selected_process_ids %}
+                                    <option value="{{ process_id }}" selected>{{ process_id }}</option>
+                                {% else %}
+                                    <option value="{{ process_id }}">{{ process_id }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="stepId">Step ID</label>
+                        <select id="stepId" class="form-control" name="stepId">
+                            {% for step_id in initial_data.step_ids %}
+                                {% if step_id == initial_data.selected_step_id %}
+                                    <option value="{{ step_id }}" selected>{{ step_id }}</option>
+                                {% else %}
+                                    <option value="{{ step_id }}">{{ step_id }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="sigma">Sigma</label>
+                        <select id="sigma" class="form-control" name="sigma">
+                            {% for sigma in initial_data.sigmas %}
+                                {% if sigma == initial_data.selected_sigma %}
+                                    <option value="{{ sigma }}" selected>{{ sigma }}</option>
+                                {% else %}
+                                    <option value="{{ sigma }}">{{ sigma }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="startDate">Start Date</label>
+                        <input type="text" id="startDate" class="form-control" name="startDate" data-bs-toggle="datepicker">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="endDate">End Date</label>
+                        <input type="text" id="endDate" class="form-control" name="endDate" data-bs-toggle="datepicker">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="submitButton"></label>
+                        <button type="submit" class="btn btn-primary mt-md-4">Retrieve</button>
+                    </div>
+                </div>
+            </form>
+
+            <div id="ag-grid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+        </div>
+    </div>
+</main><!-- /.container -->
+
+{% endblock %}
+
+
+
+{% block scripts %}
+    {{ super() }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Register the render_image component by name
+            var gridOptions = {
+                columnDefs: {{ columnDefs | safe }},
+                rowData: {{ rowData | safe }},
+                // Register the render_image component by name
+                components: {
+                    render_image: render_image
+                },
+                // Set the row height to accommodate the entire image
+                getRowHeight: function(params) {
+                    // Adjust the row height based on the image height
+                    return 80; // Set a fixed row height here
+                },
+                // Set column widths
+                defaultColDef: {
+                    width: 100 // Set a default width for columns
+                },
+                // Define cell renderer for "lot_id" column
+                onCellClicked: function(event) {
+                    // Check if the clicked cell is in the "lot_id" column
+                    if (event.column.colId === 'lot_id') {
+                        // Extract the row data
+                        var rowData = event.data;
+                        // Construct the URL with query parameters
+                        var url = '/detail_page?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
+                        // Redirect to the detail page with selected row data
+                        window.location.href = url;
+                    }
+                }
+            };
+
+            var gridDiv = document.querySelector('#ag-grid');
+            new agGrid.Grid(gridDiv, gridOptions);
+        });
+
+        // Define the render_image component
+        var render_image = function(params) {
+            const imageHtml = `<img src="${params.value}" width="80" height="80">`;
+            return imageHtml;
+        };
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2
+            $('.select2').select2({
+                placeholder: "Select process IDs",
+                allowClear: true
+            });
+
+            // Get the first process ID option's value
+            var firstProcessId = $('#processId option:first').val();
+
+            // Set the default selected value for the Process ID dropdown
+            $('#processId').val(firstProcessId).trigger('change');
+
+            // If you want multiple selections and wish to select the first few or more by default,
+            // you can pass an array of values to the val() function like so:
+            // var defaultProcessIds = [$('#processId option:eq(0)').val(), $('#processId option:eq(1)').val()];
+            // $('#processId').val(defaultProcessIds).trigger('change');
+
+            // Initialize Bootstrap 5 Datepicker for start date
+            var startDatepicker = new bootstrap.Datepicker(document.getElementById('startDate'), {
+                format: 'yyyy-mm-dd',
+                endDate: new Date(), // Today
+                todayBtn: true,
+                todayHighlight: true,
+                autoclose: true
+            });
+
+            // Initialize Bootstrap 5 Datepicker for end date
+            var endDatepicker = new bootstrap.Datepicker(document.getElementById('endDate'), {
+                format: 'yyyy-mm-dd',
+                endDate: new Date(), // Today
+                todayBtn: true,
+                todayHighlight: true,
+                autoclose: true
+            });
+
+            // Set default values for start date and end date
+            var defaultStartDate = new Date();
+            defaultStartDate.setDate(defaultStartDate.getDate() - 14); // 14 days back
+            startDatepicker.setDate(defaultStartDate);
+
+            var defaultEndDate = new Date();
+            endDatepicker.setDate(defaultEndDate);
+        });
+    </script>
+{% endblock %}
