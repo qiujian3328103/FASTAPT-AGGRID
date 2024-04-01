@@ -1,3 +1,10 @@
+# start the program 
+uvicorn app.main:app --reload --port 8080
+
+# datepicker 
+https://codepen.io/vsfvjiuv-the-typescripter/pen/mdMeJwL
+# Current Use of boostrap5 theme 
+https://bootswatch.com/minty/
 # pyenv setup 
 pyenv install  3.11.5  
 pyenv virtualenv 3.11.5 myproject-env

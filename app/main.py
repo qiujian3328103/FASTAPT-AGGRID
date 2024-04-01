@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.library import openfile
 
-from app.routers import twoforms, unsplash, accordion
+from app.routers import twoforms, unsplash, accordion, swly_recorder
 import pandas as pd 
 import json 
 
@@ -19,6 +19,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(unsplash.router)
 app.include_router(twoforms.router)
 app.include_router(accordion.router)
+app.include_router(swly_recorder.router)
 
 
 # @app.get("/", response_class=HTMLResponse)
@@ -126,7 +127,7 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     # Render the page again with updated data
     return templates.TemplateResponse("page.html", {'request': request, "columnDefs": json.dumps(column_defs), "rowData": json.dumps(row_data), "initial_data": initial_data})
 
-@app.get("/detail_page")
-async def detail_page(lot_id: str = Query(...), wafer_id: str = Query(...)):
-    # Process the selected row data
-    return {"lot_id": lot_id, "wafer_id": wafer_id}
+# @app.get("/detail_page")
+# async def detail_page(lot_id: str = Query(...), wafer_id: str = Query(...)):
+#     # Process the selected row data
+#     return {"lot_id": lot_id, "wafer_id": wafer_id}
