@@ -10,10 +10,10 @@
             width: 100%;
             height: 100%;
         }
-    
-        card-body {
-            height: 200px;
+
+        .card-body {
             overflow-y: auto;
+            overflow-x: auto;
             overflow: hidden;
         }
     </style>
@@ -23,16 +23,22 @@
 {% block page_content %}
     <main role="main" style="padding-top: 70px;">
         <h2>lot_id {{lot_id}} and wafer_id {{wafer_id}}.</h2>
-        <div class="col-md-4 mb-2 p-1 no-lr-margin">
-            <div class="card">
-                <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 14px;">
-                    {{lot_id}}
-                </div>
-                <div class="card-body">
-                    <div id="wafer-map" style="width: 150%; height: 400px;"></div>
-                </div>
-                <div class="card-footer">
-                    <button type="button" class="btn btn-primary">Click</button>
+        <div class="container mt-5 no-lr-margin">
+            <div class="row g-0">
+                <div class="col-md-6 mb-2 p-1 no-lr-margin">
+                    <div class="card">
+                        <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 14px;">
+                            {{lot_id}}
+                        </div>
+                        <div class="card-body">
+                            <div id="wafer-map" style="width: 100%; height: 100%;"></div>
+                        </div>
+                        <div class="card-footer">
+                            <button id="recenterButton" type="button" class="btn btn-primary">Reset</button>
+                            <button id="shotButton" type="button" class="btn btn-primary">Shot</button>
+                            <button id="changeWidth" type="button" class="btn btn-primary">ChangeWidth</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,7 +48,101 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', path='js/d3.v7.min.js') }}"></script>
-{% endblock %}
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script>
+    // Declare svg and zoom in a wider scope to make them accessible by all functions
+    let svg;
+    let zoom;
 
+    function drawWaferMap(data, containerId) {
+        const svgContainer = document.getElementById(containerId);
+        if (!svgContainer) {
+            console.error("Container not found:", containerId);
+            return;
+        }
+        const max_x = d3.max(data, ({ x }) => x);
+        const max_y = d3.max(data, ({ y }) => y);
+        const min_x = d3.min(data, ({ x }) => x);
+        const min_y = d3.min(data, ({ y }) => y);
+        const radius = 150;
+        
+        // Initialize svg using wider scope variable without const
+        svg = d3.create("svg")
+            .attr("viewBox", [-150, -150, 300, 300]);
+
+        const c1 = svg.append("circle")
+            .style("fill", "gray")
+            .style("stroke", "black")
+            .style("stroke-width", 0.025)
+            .attr("r", radius + 0.2)
+            .attr("cx", 0.5)
+            .attr("cy", 0.5);
+
+        const c2 = svg.append("circle")
+            .style("fill", "gray")
+            .style("stroke", "black")
+            .style("stroke-width", 0.025)
+            .attr("r", radius)
+            .attr("cx", 0.5)
+            .attr("cy", 0.5);
+
+        const g = svg.append("g").selectAll("rect")
+            .data(data)
+            .join("rect")
+            .attr("x", ({x}) => x)
+            .attr("y", ({y}) => y)
+            .attr("width", {{ rectWidth|safe }})
+            .attr("height", {{ rectHeight|safe }})
+            .attr("fill", ({color}) => color)
+            .attr("stroke", "white")
+            .attr("stroke-width", 0.025);
+        
+        // add annotation on the wafer when mouse hover
+        svg.selectAll("rect")
+                .data(data)
+                .append("svg:title")
+                .text(({mouseover}) => mouseover);
+
+        // Initialize zoom using wider scope variable
+        zoom = d3.zoom()
+            .extent([[-100, -100], [500, 500]])
+            .scaleExtent([1, 8])
+            .on("zoom", function(event) {
+                g.attr("transform", event.transform);
+                c1.attr("transform", event.transform);
+                c2.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        svg.on("mousedown", function() {
+                    // Prevent drag
+                    d3.event.preventDefault();
+                });
+
+        document.getElementById(containerId).appendChild(svg.node());
+    }
+
+    // Define the resetZoom function
+    function resetZoom() {
+        if (svg && zoom) {
+            svg.transition()
+                .duration(750) // Smooth transition duration
+                .call(zoom.transform, d3.zoomIdentity); // Resets zoom and pan
+        }
+    }
+
+    // Bind the resetZoom function to the button click event
+    document.addEventListener('DOMContentLoaded', function() {
+        // Assuming the button has an ID 'recenterButton'
+        document.getElementById('recenterButton').addEventListener('click', function() {
+            resetZoom();
+        });
+
+        // Assuming rawData and containerId are defined, call drawWaferMap to initialize the wafer map
+        const rawData = {{ waferData|safe }};
+        drawWaferMap(rawData, 'wafer-map'); // Make sure 'wafer-map' matches the ID of your SVG container
+    });
+</script>
+{% endblock %}
 
