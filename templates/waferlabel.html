@@ -22,10 +22,18 @@
 
 {% block page_content %}
     <main role="main" style="padding-top: 70px;">
-        <h2>lot_id {{lot_id}} and wafer_id {{wafer_id}}.</h2>
-        <div class="container mt-5 no-lr-margin">
+        <div class="row">
+            <div class="col">
+                {{markdown_data.text|safe}}
+            </div>
+        </div>
+        
+        <!-- <h2>lot_id {{lot_id}} and wafer_id {{wafer_id}}.</h2> -->
+
+        <h4 class="bg-primary text-white p-2 mb-1 text-center">SWLY Marker</h4>
+        <div class="container no-lr-margin">
             <div class="row g-0">
-                <div class="col-md-6 mb-2 p-1 no-lr-margin">
+                <div class="col-md-5 mb-2 p-1 no-lr-margin">
                     <div class="card">
                         <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 14px;">
                             {{lot_id}}
@@ -34,9 +42,26 @@
                             <div id="wafer-map" style="width: 100%; height: 100%;"></div>
                         </div>
                         <div class="card-footer">
-                            <button id="recenterButton" type="button" class="btn btn-primary">Reset</button>
-                            <button id="shotButton" type="button" class="btn btn-primary">Shot</button>
-                            <button id="changeWidth" type="button" class="btn btn-primary">ChangeWidth</button>
+                            <div class="row no-gutters">
+                                <div class="col px-1">
+                                    <button id="recenterButton" type="button" class="btn btn-primary">Reset</button>
+                                </div>
+                                <div class="col px-1">
+                                    <button id="shotButton" type="button" class="btn btn-primary">Shot</button>
+                                </div>
+                                <div class="col px-1">
+                                    <input type="text" id="digitalInput" class="form-control form-control-sm" placeholder="Die width" value="0.025">
+                                </div>
+                                <div class="col px-1">
+                                    <select id="colorDropdown" class="form-control form-control-sm">
+                                        <option value="White">White</option>
+                                        <option value="red">Red</option>
+                                        <option value="blue">Blue</option>
+                                        <option value="black">Black</option>
+                                        <option value="yellow">Yellow</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,6 +78,7 @@
     // Declare svg and zoom in a wider scope to make them accessible by all functions
     let svg;
     let zoom;
+    let g;
 
     function drawWaferMap(data, containerId) {
         const svgContainer = document.getElementById(containerId);
@@ -86,7 +112,7 @@
             .attr("cx", 0.5)
             .attr("cy", 0.5);
 
-        const g = svg.append("g").selectAll("rect")
+        g = svg.append("g").selectAll("rect")
             .data(data)
             .join("rect")
             .attr("x", ({x}) => x)
@@ -132,11 +158,43 @@
         }
     }
 
+    // Define a function to update the stroke width of rectangles based on the input value
+    function updateStrokeWidth(value) {
+        // Update the stroke width of rectangles based on the input value
+        g.attr("stroke-width", value);
+    }
+
+    // Define a function to update the stroke color of rectangles based on the select dropdown
+    function updateStrokeColor(value) {
+        // Update the stroke color of rectangles based on the selected value from the dropdown
+        g.attr("stroke", value);
+    }
+
     // Bind the resetZoom function to the button click event
     document.addEventListener('DOMContentLoaded', function() {
         // Assuming the button has an ID 'recenterButton'
         document.getElementById('recenterButton').addEventListener('click', function() {
             resetZoom();
+        });
+
+        // Bind the updateStrokeWidth function to the keyup event of digitalInput
+        document.getElementById('digitalInput').addEventListener('keyup', function(event) {
+            console.log("action press enter on")
+            // Check if the key pressed is Enter (key code 13)
+            if (event.keyCode === 13) {
+                // Get the value entered in the input
+                const inputValue = parseFloat(event.target.value);
+                // Call the updateStrokeWidth function with the input value
+                updateStrokeWidth(inputValue);
+            }
+        });
+
+        // Bind the updateStrokeColor function to the change event of colorDropdown
+        document.getElementById('colorDropdown').addEventListener('change', function(event) {
+            // Get the selected value from the dropdown
+            const selectedColor = event.target.value;
+            // Call the updateStrokeColor function with the selected color value
+            updateStrokeColor(selectedColor);
         });
 
         // Assuming rawData and containerId are defined, call drawWaferMap to initialize the wafer map
