@@ -48,7 +48,15 @@ async def home(request: Request):
     sigmas = ["3Sigma", "4Sigma"]
     
     # Convert DataFrame to JSON for ag-Grid
-    column_defs = [{"headerName": col, "field": col} for col in df.columns]
+    # column_defs = [{"headerName": col, "field": col} for col in df.columns]
+    # Convert DataFrame to JSON for ag-Grid
+    column_defs = [
+        {"headerName": "Lot ID", "field": "lot_id", "filter": "agSetColumnFilter", "pinned": "left"},
+        {"headerName": "Wafer ID", "field": "wafer_id", "filter": "agSetColumnFilter", "pinned": "left"},
+        {"headerName": "Yield", "field": "yield", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
+        {"headerName": "Fail Bins", "field": "fail_bin", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
+        {"headerName": "SWLY Label", "field": "swly_label", "filter": "agSetColumnFilter", "pinned": "left"}
+    ]
     
     # Add image URL to the last column ("wafer map")
     # df["wafer map"] = df.apply(lambda row: ["<img src='https://www.kasandbox.org/programming-images/avatars/leaf-blue.png' width='20' height='20'>" for _ in range(5)], axis=1)
@@ -98,7 +106,17 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     filtered_df = df[df['lot_id'].isin(processIds)]
     
     # Convert DataFrame to JSON for ag-Grid
-    column_defs = [{"headerName": col, "field": col} for col in filtered_df.columns]
+    # column_defs = [{"headerName": col, "field": col} for col in filtered_df.columns]
+    
+    column_defs = [
+        {"headerName": "Lot ID", "field": "lot_id", "filter": "agSetColumnFilter", "pinned": "left"},
+        {"headerName": "Wafer ID", "field": "wafer_id", "filter": "agSetColumnFilter", "pinned": "left"},
+        {"headerName": "Yield", "field": "yield", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
+        {"headerName": "Fail Bins", "field": "fail_bin", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
+        {"headerName": "SWLY Label", "field": "swly_label", "filter": "agSetColumnFilter", "pinned": "left"}
+    ]
+    
+    
     for i in range(1, 26):
         col_name = f"W{i:02d}"  # Format the column name (e.g., "W01", "W02", ..., "W25")
         filtered_df[col_name] = 'static/images/map.jpg'

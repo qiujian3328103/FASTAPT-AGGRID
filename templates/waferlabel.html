@@ -22,17 +22,17 @@
 
 {% block page_content %}
     <main role="main" style="padding-top: 70px;">
-        <div class="row">
+        <!-- <div class="row">
             <div class="col">
                 {{markdown_data.text|safe}}
             </div>
-        </div>
+        </div> -->
         
-        <!-- <h2>lot_id {{lot_id}} and wafer_id {{wafer_id}}.</h2> -->
+        <!-- <h2>lot_id {{lot_id}} and wafer_id {{process_id}}.</h2> -->
 
-        <h4 class="bg-primary text-white p-2 mb-1 text-center">SWLY Marker</h4>
+        <!-- <h4 class="bg-primary text-white p-2 mb-1 text-center">SWLY Marker</h4> -->
         <div class="container no-lr-margin">
-            <div class="row g-0">
+            <div class="row">
                 <div class="col-md-5 mb-2 p-1 no-lr-margin">
                     <div class="card">
                         <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 14px;">
@@ -65,8 +65,55 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-5 mb-2 p-1 no-lr-margin">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST">
+                                <div class="mb-3">
+                                    {{process_id}} - {{lot_id}}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="wafer">Wafer ID:</label>
+                                    <select id="wafer" class="form-control select2" name="wafers" multiple>
+                                        {% for wafer_id in wafer_ids %}
+                                            {% if wafer_id in selected_wafer_ids %}
+                                                <option value="{{ wafer_id }}" selected>{{ wafer_id }}</option>
+                                            {% else %}
+                                                <option value="{{ wafer_id }}">{{ wafer_id }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="swly_bin">Select SWLY BINS:</label>
+                                    <select id="swly_bin" class="form-control select2" name="swly_bins" multiple>
+                                        {% for swly_bin in swly_bins %}
+                                                <option value="{{ swly_bin }}">{{ swly_bin }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="swly_label">Select Labels:</label>
+                                    <select id="swly_label" class="form-control select2" name="swly_labels" multiple>
+                                        {% for swly_label in swly_labels %}
+                                                <option value="{{ swly_label }}">{{ swly_label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+                                    <textarea class="form-control" required name="description" id="exampleFormControlTextarea1" rows="3">{{description}}</textarea>
+                                    <div id="help" class="form-text">Please provide complete Job description,requirements,perks and benefits.</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
+
     </main>
 {% endblock %}
 
@@ -132,7 +179,7 @@
         // Initialize zoom using wider scope variable
         zoom = d3.zoom()
             .extent([[-100, -100], [500, 500]])
-            .scaleExtent([1, 8])
+            .scaleExtent([-1, 8])
             .on("zoom", function(event) {
                 g.attr("transform", event.transform);
                 c1.attr("transform", event.transform);
@@ -170,16 +217,30 @@
         g.attr("stroke", value);
     }
 
-    // Bind the resetZoom function to the button click event
-    document.addEventListener('DOMContentLoaded', function() {
-        // Assuming the button has an ID 'recenterButton'
-        document.getElementById('recenterButton').addEventListener('click', function() {
-            resetZoom();
+    // Define a function to update the fill color of rectangles based on the select dropdown items 
+    function updateFillColor(selectedBins) {
+        console.log("Active: ", selectedBins);
+        // Iterate through each rectangle and update fill color based on selected bins
+        g.attr("fill", function(d) {
+            // Check if the bin_value matches any of the selected values
+            if (selectedBins.includes(d.bin_value)) {
+                return "red"; // Change the fill color to red
+            } else {
+                return d.color; // Keep the original fill color
+            }
         });
+    }
+
+
+        // Bind the resetZoom function to the button click event
+        document.addEventListener('DOMContentLoaded', function() {
+            // Assuming the button has an ID 'recenterButton'
+            document.getElementById('recenterButton').addEventListener('click', function() {
+                resetZoom();
+            });
 
         // Bind the updateStrokeWidth function to the keyup event of digitalInput
         document.getElementById('digitalInput').addEventListener('keyup', function(event) {
-            console.log("action press enter on")
             // Check if the key pressed is Enter (key code 13)
             if (event.keyCode === 13) {
                 // Get the value entered in the input
@@ -197,10 +258,36 @@
             updateStrokeColor(selectedColor);
         });
 
+        // Bind the updateFillColor function to the change event of swly_bin dropdown
+        // select2 
+
         // Assuming rawData and containerId are defined, call drawWaferMap to initialize the wafer map
         const rawData = {{ waferData|safe }};
         drawWaferMap(rawData, 'wafer-map'); // Make sure 'wafer-map' matches the ID of your SVG container
     });
 </script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2
+            $('.select2').select2({
+                placeholder: "Select Wafer",
+                allowClear: true
+            });
+        })
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bind the event listener for the swly_bin dropdown
+            $('#swly_bin').on('change', function () {
+                // Get an array of selected bin values
+                const selectedBins = $(this).val();
+                // console.log("Dropdown changed:", selectedBins);
+                // Call updateFillColor with the array of selected bin values
+                updateFillColor(selectedBins);
+            });
+        });
+    </script>
 {% endblock %}
 

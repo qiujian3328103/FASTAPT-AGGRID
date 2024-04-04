@@ -2,8 +2,6 @@ from fastapi import FastAPI, Request, Form, APIRouter, Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import os
-from bokeh.plotting import figure
-from bokeh.embed import components
 import pandas as pd 
 from app.library.helper import openfile
 
@@ -48,12 +46,35 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
         "x": row["left"],
         "y": row["bottom"],
         "color": row["color"],
+        "bin_value": row["bin_value"],
         "mouseover": f"Die_X: {int(row['sort_die_x'])}\nDie_Y: {int(row['sort_die_y'])}"
     }, axis=1).tolist()
     
     # markdown to show the dieloss rule 
     markdown_data = openfile("home.md")
-    return templates.TemplateResponse("waferlabel.html", {"request": request, "lot_id": lot_id, "wafer_id": wafer_id, "markdown_data": markdown_data,
+    
+    # set default preocess_id 
+    process_id = "UXPZ"
+    
+    # set default wafer_ids
+    wafer_ids = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15"]
+    selected_wafer_ids = ["01", "02", "03"]
+    
+    # set default swly_labels
+    swly_labels = ["CMP Arc Scartch", "Over Polish", "Focus Spot", "TS Unlanded", "PC-TS UnderShort", "PC Footing"]
+    
+    # setup swly_bins
+    swly_bins = ["BIN1001", "BIN1002", "BIN1003", "BIN1004"]
+    
+    
+    return templates.TemplateResponse("waferlabel.html", {"request": request, 
+                                                          "lot_id": lot_id, 
+                                                          "wafer_ids": wafer_ids, 
+                                                          "markdown_data": markdown_data,
                                                           "waferData": wafer_data,
                                                           "rectWidth": width,
-                                                          "rectHeight": height})
+                                                          "rectHeight": height, 
+                                                          "process_id": process_id, 
+                                                          "selected_wafer_ids":selected_wafer_ids, 
+                                                          "swly_labels":swly_labels, 
+                                                          "swly_bins":swly_bins})
