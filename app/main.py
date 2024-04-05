@@ -97,7 +97,8 @@ async def home(request: Request):
 
 
 @app.post("/form_submit", response_class=HTMLResponse)
-async def update_data(request: Request, processIds: list = Form(...), stepId: str = Form(None), sigma: str = Form(None)):
+async def update_data(request: Request, processIds: list = Form(...), stepId: str = Form(None), sigma: str = Form(None), 
+                      startDate: str = Form(None), endDate: str = Form(None)):
     print(processIds, stepId, sigma)
     # Read CSV data
     df = pd.read_csv("app/Book1.csv")  # Change the path to your CSV file
@@ -132,20 +133,18 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
             "cellRenderer": "render_image"
         })
         
-    # Provide initial data for dropdowns
-    initial_data = {
-        "process_ids": df['lot_id'].unique().tolist(),
-        "step_ids": ["U_SYSREAL_F", "EDS", "FT"],
-        "sigmas": ["3Sigma", "4Sigma"],
-        "selected_process_ids": processIds,
-        "selected_step_id": stepId,
-        "selected_sigma": sigma
-    }
+    # Convert filtered data into JSON structure expected by ag-grid on the frontend
+    return JSONResponse(content={"rowData": row_data})
+        
+    # # Provide initial data for dropdowns
+    # initial_data = {
+    #     "process_ids": df['lot_id'].unique().tolist(),
+    #     "step_ids": ["U_SYSREAL_F", "EDS", "FT"],
+    #     "sigmas": ["3Sigma", "4Sigma"],
+    #     "selected_process_ids": processIds,
+    #     "selected_step_id": stepId,
+    #     "selected_sigma": sigma
+    # }
     
-    # Render the page again with updated data
-    return templates.TemplateResponse("page.html", {'request': request, "columnDefs": json.dumps(column_defs), "rowData": json.dumps(row_data), "initial_data": initial_data})
-
-# @app.get("/detail_page")
-# async def detail_page(lot_id: str = Query(...), wafer_id: str = Query(...)):
-#     # Process the selected row data
-#     return {"lot_id": lot_id, "wafer_id": wafer_id}
+    # # Render the page again with updated data
+    # return templates.TemplateResponse("page.html", {'request': request, "columnDefs": json.dumps(column_defs), "rowData": json.dumps(row_data), "initial_data": initial_data})

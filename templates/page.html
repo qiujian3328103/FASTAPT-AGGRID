@@ -11,7 +11,7 @@
 <main role="main" style="padding-top: 70px;">
     <div class="row">
         <div class="col">
-            <form action="/form_submit" method="post">
+            <form id="dataForm" action="/form_submit" method="post">
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <label for="processId">Process ID</label>
@@ -153,6 +153,32 @@
             $('.select2').select2({
                 placeholder: "Select process IDs",
                 allowClear: true
+            });
+
+            // Intercept the form submission
+            $('#dataForm').submit(function(e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                var formData = new FormData(this);
+
+                // AJAX request to the backend
+                $.ajax({
+                    url: '/form_submit',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, // Required for FormData
+                    processData: false, // Required for FormData
+                    success: function(response) {
+                        // Assuming response contains the necessary data for ag-grid
+                        // Update the ag-grid with the new data
+                        if (gridOptions.api) {
+                            gridOptions.api.setRowData(response.rowData); // Adjust according to the actual response format
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error: " + status + " - " + error);
+                    }
+                });
             });
 
             // Get the first process ID option's value
