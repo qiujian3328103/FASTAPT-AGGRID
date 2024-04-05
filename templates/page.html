@@ -133,11 +133,15 @@
                 return 80; // Set a fixed row height here
                 },
                 onCellClicked: function(event) {
-                if (event.column.colId === 'lot_id') {
-                    var rowData = event.data;
-                    var url = '/detail_page?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
-                    window.location.href = url;
-                }
+                    if (event.column.colId === 'lot_id') {
+                            var rowData = event.data;
+                            var url = '/detail_page?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
+                            window.location.href = url;
+                        } else if (event.column.colId === 'wafer_id') {
+                            var rowData = event.data;
+                            var url = '/lot_review?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
+                            window.location.href = url;
+                    }
                 }
             };
         

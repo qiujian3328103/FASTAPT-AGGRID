@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.library import openfile
 
-from app.routers import twoforms, unsplash, accordion, swly_recorder
+from app.routers import twoforms, unsplash, accordion, swly_recorder, lot_review
 import pandas as pd 
 import json 
 
@@ -20,7 +20,7 @@ app.include_router(unsplash.router)
 app.include_router(twoforms.router)
 app.include_router(accordion.router)
 app.include_router(swly_recorder.router)
-
+app.include_router(lot_review.router)
 
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):

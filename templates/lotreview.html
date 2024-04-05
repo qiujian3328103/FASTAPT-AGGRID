@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}SWLY Label{% endblock %}
+
+
+{% block head %}
+    {{ super() }}
+    <style>    
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-body {
+            overflow-y: auto;
+            overflow-x: auto;
+            overflow: hidden;
+        }
+    </style>
+
+{% endblock %}
+
+{% block page_content %}
+    <main role="main" style="padding-top: 70px;">
+        <div class="container mt-2">
+            <div class = "col-md-7 mb-2 p-1 no-lr-margin">
+                <!-- Grid starts here -->
+                {% for i in range(5) %}
+                    <div class="row mb-0">
+                        {% for j in range(5) %}
+                            {% set image_index = i*5 + j %}
+                            {% if lot_wafer_urls[image_index] %}
+                                <div class="col">
+                                    <img src="{{ lot_wafer_urls[image_index].image }}" alt="Wafer Image {{ image_index + 1 }}" class="img-fluid">
+                                    <!--  <p class="text-center">{{ lot_wafer_urls[image_index].lot_wafer }}</p> -->
+                                </div>
+                            {% else %}
+                                <div class="col">
+                                    <!-- Placeholder in case there are fewer than 25 images, or customize as needed -->
+                                    <div class="placeholder-img img-fluid"></div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </main>
+{% endblock %}
