@@ -155,9 +155,32 @@
                 allowClear: true
             });
 
+                // Optional: Configure Toastr
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-left",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "500",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
             // Intercept the form submission
             $('#dataForm').submit(function(e) {
                 e.preventDefault(); // Prevent the default form submission
+
+                // Show the processing message
+                toastr.info('Processing...');
+
 
                 var formData = new FormData(this);
 
@@ -173,10 +196,13 @@
                         // Update the ag-grid with the new data
                         if (gridOptions.api) {
                             gridOptions.api.setRowData(response.rowData); // Adjust according to the actual response format
+                            // Assuming response contains the necessary data
+                            toastr.success('Data loaded successfully');
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error("Error: " + status + " - " + error);
+                        toastr.error('An error occurred');
                     }
                 });
             });
