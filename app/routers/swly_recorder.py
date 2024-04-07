@@ -1,9 +1,14 @@
-from fastapi import FastAPI, Request, Form, APIRouter, Query
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, Form, APIRouter, Query, Depends
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import os
 import pandas as pd 
 from app.library.helper import openfile
+from sqlalchemy.orm import Session
+from typing import List
+from app.library.database import get_db
+from app.library.models import SWLY_LABEL_DATA
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates/")
@@ -78,3 +83,37 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
                                                           "selected_wafer_ids":selected_wafer_ids, 
                                                           "swly_labels":swly_labels, 
                                                           "swly_bins":swly_bins})
+
+
+@router.post("/submit_swly_label_data", response_class=HTMLResponse)
+async def submit_swly_label_data(request: Request, wafers: List[str] = Form(...), swly_bins: List[str] = Form(...), swly_labels: List[str] = Form(...), description: str = Form(...), db: Session = Depends(get_db)):
+    user = "JQIU"
+    
+    print("pass")
+    # form_data = await request.form()
+    # print(form_data)  # Log to see what is received
+    # Create a new SWLY_LABEL_DATA record
+    new_record = SWLY_LABEL_DATA(
+        wafer_id=",".join(wafers),  # Assuming wafer_ids is a list of IDs
+        swly_bins=",".join(swly_bins),
+        swly_labels=",".join(swly_labels),
+        user=user,
+        description=description
+    )
+    
+    # # Add the new record to the session and commit it
+    db.add(new_record)
+    db.commit()
+    db.refresh(new_record)  # Refresh to get the ID of the new record
+    
+    # Return a response 
+    
+    
+    
+    
+    # # Return a success message along with the ID of the new record
+    # return {
+    #     "message": "SWLY label data submitted successfully",
+    #     "id": new_record.id
+    # }
+    return JSONResponse(content={"message": "SWLY label data submitted successfully"})

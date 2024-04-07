@@ -68,7 +68,7 @@
                 <div class="col-md-5 mb-2 p-1 no-lr-margin">
                     <div class="card">
                         <div class="card-body">
-                            <form method="POST">
+                            <form id="submit_swly_form" method="POST" action="/submit_swly_label_data/">
                                 <div class="mb-3">
                                     {{process_id}} - {{lot_id}}
                                 </div>
@@ -289,5 +289,49 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = document.getElementById('submit_swly_form');
+            // Optional: Configure Toastr
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-left",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "500",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();  // Prevent default form submission
+                const formData = new FormData(this);
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming 'data' contains a message for successful submission
+                    toastr.success(data.message, 'Success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toastr.error('An error occurred while submitting the form.', 'Error');
+                });
+            });
+        });
+    </script>
+        
+
 {% endblock %}
 
