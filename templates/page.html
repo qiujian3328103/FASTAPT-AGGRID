@@ -111,6 +111,8 @@
           }
           return 0; // equal
         };
+
+        var columnsToAutoSize = ['lot_id', 'wafer_id', 'yield', 'fail_bin', 'swly_label'];
       
         document.addEventListener('DOMContentLoaded', function() {
             gridOptions = {
@@ -142,9 +144,11 @@
                             var url = '/lot_review?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
                             window.location.href = url;
                     }
-                }
+                },
+
             };
-        
+
+    
             var gridDiv = document.querySelector('#ag-grid');
             new agGrid.Grid(gridDiv, gridOptions);
         });

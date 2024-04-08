@@ -110,11 +110,11 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     # column_defs = [{"headerName": col, "field": col} for col in filtered_df.columns]
     
     column_defs = [
-        {"headerName": "Lot ID", "field": "lot_id", "filter": "agSetColumnFilter", "pinned": "left"},
-        {"headerName": "Wafer ID", "field": "wafer_id", "filter": "agSetColumnFilter", "pinned": "left"},
-        {"headerName": "Yield", "field": "yield", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
-        {"headerName": "Fail Bins", "field": "fail_bin", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
-        {"headerName": "SWLY Label", "field": "swly_label", "filter": "agSetColumnFilter", "pinned": "left"}
+        {"headerName": "Lot ID", "field": "lot_id", "filter": "agSetColumnFilter", "pinned": "left","width": 60},
+        {"headerName": "Wafer ID", "field": "wafer_id", "filter": "agSetColumnFilter", "pinned": "left","width": 60},
+        {"headerName": "Yield", "field": "yield", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left","width": 60},
+        {"headerName": "Fail Bins", "field": "fail_bin", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left","width": 60},
+        {"headerName": "SWLY Label", "field": "swly_label", "filter": "agSetColumnFilter", "pinned": "left","width": 60}
     ]
     
     

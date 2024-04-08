@@ -33,7 +33,7 @@
         <!-- <h4 class="bg-primary text-white p-2 mb-1 text-center">SWLY Marker</h4> -->
         <div class="container no-lr-margin">
             <div class="row">
-                <div class="col-md-5 mb-2 p-1 no-lr-margin">
+                <div class="col-md-4 mb-2 p-1 no-lr-margin">
                     <div class="card">
                         <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 14px;">
                             {{lot_id}}
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 mb-2 p-1 no-lr-margin">
+                <div class="col-md-4 mb-2 p-1 no-lr-margin">
                     <div class="card">
                         <div class="card-body">
                             <form id="submit_swly_form" method="POST" action="/submit_swly_label_data/">
@@ -110,6 +110,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3 col-lg-4 order-md-last">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary">Top Failure Bins</span>
+                        <span class="badge bg-primary rounded-pill">3</span>
+                    </h4>
+
+                    <ul class="list-group mb-3">
+                        {% for item in top_bin_items %}
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                    <h6 class="my-0">{{ item.BIN_ITEM }}</h6>
+                                    <small class="text-muted">Dynamic BIN_GROUP</small>
+                                </div>
+                                <span class="text-muted">{{ item.BIN_VALUE }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
             </div>
 
         </div>
@@ -311,7 +330,7 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             };
-            
+
             form.addEventListener('submit', function(e) {
                 e.preventDefault();  // Prevent default form submission
                 const formData = new FormData(this);
@@ -331,7 +350,51 @@
             });
         });
     </script>
+    
+
+    <script>
+        var summaryziedByWaferID = {{ summaryzied_by_waferID | safe }};
+    </script>
+
+    <script>
+        $(document).ready(function() {        
+            $('#wafer').on('change', function() {
+                var selectedWaferIDs = $(this).val();
+                var combinedData = {};
         
+                // Combine data for selected wafers
+                selectedWaferIDs.forEach(waferID => {
+                    // Find the data for the selected wafer ID
+                    var waferData = summaryziedByWaferID.find(w => w.WAFER_ID === waferID);
+                    if (waferData) {
+                        // Iterate over the Data object within the found wafer data
+                        Object.entries(waferData.Data).forEach(([binItem, binValue]) => {
+                            if (!combinedData[binItem]) {
+                                combinedData[binItem] = [];
+                            }
+                            combinedData[binItem].push(binValue);
+                        });
+                    }
+                });
+        
+                // Calculate mean for each BIN_ITEM and sort to find top 10
+                var topItems = Object.keys(combinedData).map(binItem => {
+                    var total = combinedData[binItem].reduce((sum, current) => sum + current, 0);
+                    var mean = total / combinedData[binItem].length;
+                    return { BIN_ITEM: binItem, BIN_VALUE: mean };
+                }).sort((a, b) => b.BIN_VALUE - a.BIN_VALUE).slice(0, 10);
+        
+                // Update the HTML list
+                var listGroup = $('.list-group.mb-3').empty();
+                topItems.forEach(item => {
+                    $('<li>', {
+                        'class': 'list-group-item d-flex justify-content-between lh-sm',
+                        html: `<div><h6 class="my-0">${item.BIN_ITEM}</h6><small class="text-muted">Mean BIN VALUE</small></div><span class="text-muted">${item.BIN_VALUE.toFixed(2)}</span>`
+                    }).appendTo(listGroup);
+                });
+            });
+        });
+        </script>
 
 {% endblock %}
 
