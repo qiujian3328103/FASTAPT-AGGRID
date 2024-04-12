@@ -16,6 +16,102 @@
             overflow-x: auto;
             overflow: hidden;
         }
+    /* Hiding the checkbox, but allowing it to be focused */
+    .badgebox
+    {
+        opacity: 0;
+    }
+
+    .badgebox + .badge
+    {
+        /* Move the check mark away when unchecked */
+        text-indent: -999999px;
+        /* Makes the badge's width stay the same checked and unchecked */
+        width: 27px;
+    }
+
+    .badgebox:focus + .badge
+    {
+        /* Set something to make the badge looks focused */
+        /* This really depends on the application, in my case it was: */
+        
+        /* Adding a light border */
+        box-shadow: inset 0px 0px 5px;
+        /* Taking the difference out of the padding */
+    }
+
+    .badgebox:checked + .badge
+    {
+        /* Move the check mark back when checked */
+        text-indent: 0;
+    }
+    /* The customcheck */
+    .customcheck {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    /* Hide the browser's default checkbox */
+    .customcheck input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Create a custom checkbox */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+        border-radius: 5px;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .customcheck:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .customcheck input:checked ~ .checkmark {
+        background-color: #02cf32;
+        border-radius: 5px;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .customcheck input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .customcheck .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
     </style>
 {% endblock %}
 
@@ -47,7 +143,10 @@
                                     <button id="recenterButton" type="button" class="btn btn-primary">Reset</button>
                                 </div>
                                 <div class="col px-1">
-                                    <button id="shotButton" type="button" class="btn btn-primary">Shot</button>
+                                    <label class="customcheck">Shot
+                                        <input type="checkbox" checked="checked" id="shotDataCheckbox">
+                                        <span class="checkmark"></span>
+                                    </label>
                                 </div>
                                 <div class="col px-1">
                                     <input type="text" id="digitalInput" class="form-control form-control-sm" placeholder="Die width" value="0.025">
@@ -145,8 +244,9 @@
     let svg;
     let zoom;
     let g;
+    let s;
 
-    function drawWaferMap(data, containerId) {
+    function drawWaferMap(data, shotData, containerId) {
         const svgContainer = document.getElementById(containerId);
         if (!svgContainer) {
             console.error("Container not found:", containerId);
@@ -185,9 +285,22 @@
             .attr("y", ({y}) => y)
             .attr("width", {{ rectWidth|safe }})
             .attr("height", {{ rectHeight|safe }})
+            .attr("fill", "blue")
+            .attr("stroke", "red")
+            .attr("fill-opacity", 0)
+            .attr("stroke-width", 1);
+
+        s = svg.append("g").selectAll("rect")
+            .data(shotData)
+            .join("rect")
+            .attr("x", ({x}) => x)
+            .attr("y", ({y}) => y)
+            .attr("width", {{ shotWidth|safe }})
+            .attr("height", {{ shotHeight|safe }})
             .attr("fill", ({color}) => color)
             .attr("stroke", "white")
-            .attr("stroke-width", 0.025);
+            .attr("stroke-width", 0.025)
+            .attr("display", "none");  // Initially hide the shotData
         
         // add annotation on the wafer when mouse hover
         svg.selectAll("rect")
@@ -201,6 +314,7 @@
             .scaleExtent([-1, 8])
             .on("zoom", function(event) {
                 g.attr("transform", event.transform);
+                s.attr("transform", event.transform);
                 c1.attr("transform", event.transform);
                 c2.attr("transform", event.transform);
             });
@@ -282,7 +396,8 @@
 
         // Assuming rawData and containerId are defined, call drawWaferMap to initialize the wafer map
         const rawData = {{ waferData|safe }};
-        drawWaferMap(rawData, 'wafer-map'); // Make sure 'wafer-map' matches the ID of your SVG container
+        const shotData = {{ shotData|safe }};
+        drawWaferMap(rawData,shotData, 'wafer-map'); // Make sure 'wafer-map' matches the ID of your SVG container
     });
 </script>
 
@@ -347,6 +462,21 @@
                     console.error('Error:', error);
                     toastr.error('An error occurred while submitting the form.', 'Error');
                 });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const shotDataCheckbox = document.getElementById('shotDataCheckbox');
+            
+            shotDataCheckbox.addEventListener('change', function() {
+                console.log(shotDataCheckbox);
+                if (this.checked) {
+                    s.attr('display', ''); // Show shot data
+                } else {
+                    s.attr('display', 'none'); // Hide shot data
+                }
             });
         });
     </script>

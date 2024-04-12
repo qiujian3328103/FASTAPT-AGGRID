@@ -7,7 +7,7 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
             <img src="/static/images/SWLY.jpg" width="40" height="40" class="d-inline-block align-center" alt="FastAPI Logo">
             <span style="margin-left: 5px; font-size: 1.4rem;">SWLY Tracker</span>
         </a>
@@ -28,6 +28,10 @@
                 <li class="nav-item {{'active' if active_page == 'gallery_view' }}">
                     <a class="nav-link" href="/gallery_view">Gallery View</a>
                 </li>
+                <a href="#" class="navbar-nav-link d-flex align-items-center dropdown-toggle" data-toggle="dropdown">
+                    <img src="/static/images/SWLY.jpg" width="50" height="50" class="rounded-circle" alt="">
+                    <span> </span> <strong>{{user}}</strong>
+                </a>
             </ul>
         </div>
     </div>
@@ -43,7 +47,7 @@
         margin-top: -5px; /* Adjust top margin of the logo */
     }
 </style> -->
-
+<!-- 
 <style>
     .navbar {
         margin-bottom: 10; /* Remove bottom margin */
@@ -58,3 +62,4 @@
         color: #ffc107; /* Brighter color for active nav link */
     }
 </style>
+-->

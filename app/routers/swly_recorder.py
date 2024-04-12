@@ -53,6 +53,11 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
     df['bottom'] = df['ucs_die_origin_y'] *0.001
     df['top'] = df['ucs_die_origin_y']*0.001
     # Setting the width and height
+    
+    df["shot_bottom"] = df["ucs_die_y"]
+    df["shot_left"] = df["ucs_die_x"]
+    shot_width = 5
+    shot_height = 12
 
     # Map the ucs_die_origin_x and ucs_die_origin_y to x and y, and set color
     df["color"] = "green"
@@ -64,6 +69,13 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
         "color": row["color"],
         "bin_value": row["bin_value"],
         "mouseover": f"Die_X: {int(row['sort_die_x'])}\nDie_Y: {int(row['sort_die_y'])}"
+    }, axis=1).tolist()
+    
+        # Generate a list of dictionaries to match the format needed for D3.js
+    shot_data = df.apply(lambda row: {
+        "x": row["shot_left"],
+        "y": row["shot_bottom"],
+        "color": row["color"],
     }, axis=1).tolist()
     
     # markdown to show the dieloss rule 
@@ -103,8 +115,11 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
                                                           "wafer_ids": wafer_ids, 
                                                           "markdown_data": markdown_data,
                                                           "waferData": wafer_data,
+                                                          "shotData": shot_data,
                                                           "rectWidth": width,
                                                           "rectHeight": height, 
+                                                          "shotWidth":shot_width,
+                                                          "shotHeight":shot_height,
                                                           "process_id": process_id, 
                                                           "selected_wafer_ids":selected_wafer_ids, 
                                                           "swly_labels":swly_labels, 

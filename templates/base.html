@@ -36,6 +36,13 @@
         <link href="{{ url_for('static', path='/css/bootstrap-datepicker.min.css') }}", rel="stylesheet">
         <link href="{{ url_for('static', path='/css/toastr.min.css') }}", rel="stylesheet">
     {% endblock %}
+
+    <style>
+        #sidebar {
+            z-index: 1050; /* Set z-index to 1050 to show the sidebar on top of the navbar */
+            position: relative; /* z-index only works on positioned elements (not static) */
+        }
+    </style>
     
 </head>
 
