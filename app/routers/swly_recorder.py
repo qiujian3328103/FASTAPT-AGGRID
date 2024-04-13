@@ -8,10 +8,11 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.library.database import get_db
 from app.library.models import SWLY_LABEL_DATA
+from app.library.helper import CustomJinja2Templates
 
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates/")
+templates = CustomJinja2Templates(directory="templates/")
 
 
 def aggreate_to_dict(series):

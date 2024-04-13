@@ -1,3 +1,3 @@
-from .helper import openfile
+from .helper import openfile, CustomJinja2Templates
 from .models import SWLY_LABEL_DATA
 from .database import get_db

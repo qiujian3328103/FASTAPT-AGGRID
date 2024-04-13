@@ -4,9 +4,10 @@ from fastapi.templating import Jinja2Templates
 import os
 import pandas as pd 
 from app.library.helper import openfile
+from app.library.helper import CustomJinja2Templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates/")
+templates = CustomJinja2Templates(directory="templates")
 
 
 @router.get("/lot_review", response_class=HTMLResponse)

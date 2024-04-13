@@ -4,15 +4,16 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.library import openfile
-
+from app.library.helper import CustomJinja2Templates
 from app.routers import twoforms, unsplash, accordion, swly_recorder, lot_review
 import pandas as pd 
 import json 
+import os 
 
 app = FastAPI()
 
 
-templates = Jinja2Templates(directory="templates")
+templates = CustomJinja2Templates(directory="templates")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -38,7 +39,8 @@ async def show_page(request: Request, page_name: str):
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    
+    user = os.getlogin()
+    print(user)
     # Read CSV data
     df = pd.read_csv("app/Book1.csv")  # Change the path to your CSV file
     
@@ -91,7 +93,8 @@ async def home(request: Request):
                                       {"request": request,
                                        "initial_data": initial_data,
                                        "columnDefs": json.dumps(column_defs), 
-                                       "rowData": json.dumps(row_data)
+                                       "rowData": json.dumps(row_data),
+                                       "user": user
                                         })
 
 
