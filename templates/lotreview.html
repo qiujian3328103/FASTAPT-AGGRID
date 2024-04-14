@@ -22,6 +22,18 @@
 
 {% block page_content %}
     <main role="main" style="padding-top: 70px;">
+        <form id="dataForm" action="/form_lotreview_submit" method="post">
+            <div class="row mb-4">
+                <div class="col">
+                    <input type="text" class="form-control" id="inputRootLotId" placeholder="RootLotID">
+                  </div>
+                <div class="col">
+                    <label for="submitButton"></label>
+                    <button type="submit" class="btn btn-primary mt-md-4">Review</button>
+                </div>
+            </div>
+        </form>
+        <hr/>
         <div class="container mt-2">
             <div class = "col-md-7 mb-2 p-1 no-lr-margin">
                 <!-- Grid starts here -->
@@ -50,3 +62,35 @@
         </div>
     </main>
 {% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+<script>
+    document.getElementById('dataForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        const rootLotID = document.getElementById('inputRootLotId').value;
+        
+        // Assuming you're using GET to send data, adjust as necessary for POST
+        fetch(`/form_lotreview_submit?lot_id=${rootLotID}`, {
+            method: 'GET', // Or 'POST'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateWaferMap(data.lot_wafer_urls);
+        })
+        .catch(error => console.error('Failed to fetch:', error));
+    });
+    
+    function updateWaferMap(lotWaferUrls) {
+        const container = document.querySelector('.container > .col-md-7.mb-2.p-1.no-lr-margin');
+        container.innerHTML = ''; // Clear existing content
+        lotWaferUrls.forEach((item, index) => {
+            let imgDiv = `<div class="col"><img src="${item.image}" alt="Wafer Image ${index + 1}" class="img-fluid"></div>`;
+            container.innerHTML += imgDiv;
+        });
+    }
+    </script>
+    {% endblock %}
