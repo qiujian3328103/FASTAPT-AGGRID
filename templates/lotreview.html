@@ -6,6 +6,13 @@
 {% block head %}
     {{ super() }}
     <style>    
+        .img-container{
+            border: 2px solid black;
+        }
+        .img-container img{
+            width: 130px;
+            height: 130px;
+        }
         .container {
             width: 100%;
             height: 100%;
@@ -42,15 +49,19 @@
                         {% for j in range(5) %}
                             {% set image_index = i*5 + j %}
                             {% if lot_wafer_urls[image_index] %}
-                                <div class="col">
-                                    <img src="{{ lot_wafer_urls[image_index].image }}" alt="Wafer Image {{ image_index + 1 }}" class="img-fluid">
-                                    <!--  <p class="text-center">{{ lot_wafer_urls[image_index].lot_wafer }}</p> -->
+                                <div class="col mb-1 p-1 d-flex justify-content-center">
+                                    <div class="img-container">
+                                        <img src="{{ lot_wafer_urls[image_index].image }}" alt="Wafer Image {{ image_index + 1 }}" class="img-fluid">
+                                        <p class="text-center">{{ lot_wafer_urls[image_index].lot_wafer }}</p>
+                                    </div>
                                 </div>
                             {% else %}
-                                <div class="col">
+                            <div class="col mb-1 p-1 d-flex justify-content-center">
+                                <div class="img-container">
                                     <!-- Placeholder in case there are fewer than 25 images, or customize as needed -->
                                     <div class="placeholder-img img-fluid"></div>
                                 </div>
+                            </div>
                             {% endif %}
                         {% endfor %}
                     </div>
@@ -86,11 +97,42 @@
     
     function updateWaferMap(lotWaferUrls) {
         const container = document.querySelector('.container > .col-md-7.mb-2.p-1.no-lr-margin');
-        container.innerHTML = ''; // Clear existing content
-        lotWaferUrls.forEach((item, index) => {
-            let imgDiv = `<div class="col"><img src="${item.image}" alt="Wafer Image ${index + 1}" class="img-fluid"></div>`;
-            container.innerHTML += imgDiv;
-        });
+        // Ensure that the row structure is maintained as per the original grid layout
+        for (let i = 0; i < 5; i++) {  // Assuming a 5x5 grid
+            let row = container.children[i] || document.createElement('div');
+            row.className = 'row mb-0';
+            for (let j = 0; j < 5; j++) {
+                let imageIndex = i * 5 + j;
+                let col = row.children[j] || document.createElement('div');
+                col.className = 'col mb-1 p-1 d-flex justify-content-center';
+                
+                if (lotWaferUrls[imageIndex]) {
+                    let imgContainer = col.children[0] || document.createElement('div');
+                    imgContainer.className = 'img-container';
+    
+                    let img = imgContainer.children[0] || new Image();
+                    img.src = lotWaferUrls[imageIndex].image;
+                    img.alt = "Wafer Image " + (imageIndex + 1);
+                    img.className = "img-fluid";
+    
+                    let label = imgContainer.children[1] || document.createElement('p');
+                    label.className = 'text-center';
+                    label.textContent = lotWaferUrls[imageIndex].lot_wafer;
+    
+                    if (!imgContainer.children[0]) imgContainer.appendChild(img); // Append img if it doesn't exist
+                    if (!imgContainer.children[1]) imgContainer.appendChild(label); // Append label if it doesn't exist
+                    if (!col.children[0]) col.appendChild(imgContainer); // Append imgContainer if it doesn't exist
+                } else {
+                    // Handle cases where the image data is not available
+                    col.innerHTML = `<div class="img-container">
+                        <div class="placeholder-img img-fluid"></div>
+                    </div>`;
+                }
+                if (!row.children[j]) row.appendChild(col); // Append column if it doesn't exist
+            }
+            if (!container.children[i]) container.appendChild(row); // Append row if it doesn't exist
+        }
     }
+    
     </script>
     {% endblock %}
