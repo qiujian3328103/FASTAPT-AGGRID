@@ -408,6 +408,29 @@
                 placeholder: "Select Wafer",
                 allowClear: true
             });
+
+            // Event listener for h6 tag clicks within list-group
+            $('.list-group').on('click', 'h6', function() {
+                var clickedValue = $(this).text().trim();  // Get text from the h6 element
+                console.log(clickedValue);
+                // Get the current selected values from the Select2
+                var selectedValues = $('#swly_bin').val() || [];
+
+                // Check if the clicked item's value is already selected
+                var index = selectedValues.indexOf(clickedValue);
+                console.log(index);
+                if (index > -1) {
+                    // If already selected, remove it from the selection
+                    selectedValues.splice(index, 1);
+                } else {
+                    // If not selected, add it to the selection
+                    selectedValues.push(clickedValue);
+                }
+
+                // Update the Select2 control
+                $('#swly_bin').val(selectedValues);
+                // <!-- $('#swly_bin').val(selectedValues).trigger('change'); -->
+            });
         })
     </script>
 

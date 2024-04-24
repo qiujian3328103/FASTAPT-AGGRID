@@ -29,48 +29,53 @@
 
 {% block page_content %}
     <main role="main" style="padding-top: 70px;">
-        <form id="dataForm" action="/form_lotreview_submit" method="post">
-            <div class="row mb-4">
-                <div class="col">
-                    <input type="text" class="form-control" id="inputRootLotId" placeholder="RootLotID">
-                  </div>
-                <div class="col">
-                    <label for="submitButton"></label>
-                    <button type="submit" class="btn btn-primary mt-md-4">Review</button>
+        <div closs="row mb-3">
+            <form id="dataForm" action="/form_lotreview_submit" method="post">
+                <div class="row mb-4">
+                    <div class="col">
+                        <input type="text" class="form-control" id="inputRootLotId" placeholder="RootLotID">
+                      </div>
+                    <div class="col">
+                        <label for="submitButton"></label>
+                        <button type="submit" class="btn btn-primary mt-md-4">Review</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+
         <hr/>
-        <div class="container mt-2">
-            <div class = "col-md-7 mb-2 p-1 no-lr-margin">
-                <!-- Grid starts here -->
-                {% for i in range(5) %}
-                    <div class="row mb-0">
-                        {% for j in range(5) %}
-                            {% set image_index = i*5 + j %}
-                            {% if lot_wafer_urls[image_index] %}
+        <div class="row">
+                <div class = "col-md-5">
+                    <!-- Grid starts here -->
+                    {% for i in range(5) %}
+                        <div class="row mb-0">
+                            {% for j in range(5) %}
+                                {% set image_index = i*5 + j %}
+                                {% if lot_wafer_urls[image_index] %}
+                                    <div class="col mb-1 p-1 d-flex justify-content-center">
+                                        <div class="img-container">
+                                            <img src="{{ lot_wafer_urls[image_index].image }}" alt="Wafer Image {{ image_index + 1 }}" class="img-fluid">
+                                            <p class="text-center">{{ lot_wafer_urls[image_index].lot_wafer }}</p>
+                                        </div>
+                                    </div>
+                                {% else %}
                                 <div class="col mb-1 p-1 d-flex justify-content-center">
                                     <div class="img-container">
-                                        <img src="{{ lot_wafer_urls[image_index].image }}" alt="Wafer Image {{ image_index + 1 }}" class="img-fluid">
-                                        <p class="text-center">{{ lot_wafer_urls[image_index].lot_wafer }}</p>
+                                        <!-- Placeholder in case there are fewer than 25 images, or customize as needed -->
+                                        <div class="placeholder-img img-fluid"></div>
                                     </div>
                                 </div>
-                            {% else %}
-                            <div class="col mb-1 p-1 d-flex justify-content-center">
-                                <div class="img-container">
-                                    <!-- Placeholder in case there are fewer than 25 images, or customize as needed -->
-                                    <div class="placeholder-img img-fluid"></div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </div>
-            <div class = "col-md-5">
-                <div id="ag-grid" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
-            </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class = "col-md-5">
+                    <div id="ag-grid" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
+                </div>
+            
         </div>
+
     </main>
 {% endblock %}
 

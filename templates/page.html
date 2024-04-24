@@ -3,6 +3,25 @@
 {% block title %}SWLY Tracking{% endblock %}
 {% block head %}
     {{ super() }}
+    <style>
+            /* Adjust the height of the Select2 container */
+            .select2-container--bootstrap-5 .select2-selection {
+                height: calc(2.25rem + 3px); /* Bootstrap's standard input height */
+                padding: 0.375rem 0.75rem; /* Standard Bootstrap padding */
+            }
+        
+            /* Align the text within the Select2 box */
+            .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice,
+            .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+                line-height: 1.7; /* Standard Bootstrap line height */
+            }
+        
+            /* Adjust the height of the dropdown to match other inputs */
+            .select2-container--bootstrap-5 .select2-selection--multiple {
+                min-height: calc(2.25rem + 3px);
+            }
+        
+    </style>
 
 {% endblock %}
 
@@ -87,181 +106,9 @@
     {{ super() }}
 
     <script>
-        // Declare gridOptions globally
-        var gridOptions;
-      
-        // Define the render_image component
-        var render_image = function(params) {
-          return `<img src="${params.value}" width="80" height="80">`;
-        };
-      
-        // Custom comparator function for date fields, if you have date fields
-        var dateComparator = function(filterLocalDateAtMidnight, cellValue) {
-          var dateParts = cellValue.split('/');
-          var cellDate = new Date(
-            Number(dateParts[2]),
-            Number(dateParts[1]) - 1,
-            Number(dateParts[0])
-          );
-      
-          if (cellDate < filterLocalDateAtMidnight) {
-            return -1;
-          } else if (cellDate > filterLocalDateAtMidnight) {
-            return 1;
-          }
-          return 0; // equal
-        };
-
-        var columnsToAutoSize = ['lot_id', 'wafer_id', 'yield', 'fail_bin', 'swly_label'];
-      
-        document.addEventListener('DOMContentLoaded', function() {
-            gridOptions = {
-                columnDefs: {{ columnDefs | safe }},
-                rowData: {{ rowData | safe }},
-                defaultColDef: {
-                flex: 1,
-                minWidth: 100,
-                filter: "agTextColumnFilter",
-                filterParams: {
-                    // Example to use the custom date comparator in all date columns, if applicable
-                    comparator: dateComparator
-                },
-                menuTabs: ["filterMenuTab"],
-                },
-                components: {
-                render_image: render_image
-                },
-                getRowHeight: function(params) {
-                return 80; // Set a fixed row height here
-                },
-                onCellClicked: function(event) {
-                    if (event.column.colId === 'lot_id') {
-                            var rowData = event.data;
-                            var url = '/detail_page?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
-                            //window.location.href = url; // this method render in current tab
-                            window.open(url, '_blank'); // Opens in a new tab
-                        } else if (event.column.colId === 'wafer_id') {
-                            var rowData = event.data;
-                            var url = '/lot_review?lot_id=' + rowData.lot_id + '&wafer_id=' + rowData.wafer_id;
-                            window.location.href = url;
-                    }
-                },
-
-            };
-
-    
-            var gridDiv = document.querySelector('#ag-grid');
-            new agGrid.Grid(gridDiv, gridOptions);
-        });
+        // Make the template variables available to the external JS
+        var columnDefs = {{ columnDefs | safe }};
+        var rowData = {{ rowData | safe }};
     </script>
-      
-
-    <script>
-        $(document).ready(function() {
-            // Initialize Select2
-            $('.select2').select2({
-                placeholder: "Select process IDs",
-                allowClear: true
-            });
-
-                // Optional: Configure Toastr
-            toastr.options = {
-                "closeButton": false,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": true,
-                "positionClass": "toast-top-left",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "500",
-                "timeOut": "1000",
-                "extendedTimeOut": "500",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-
-            // Intercept the form submission
-            $('#dataForm').submit(function(e) {
-                e.preventDefault(); // Prevent the default form submission
-
-                // Show the processing message
-                toastr.info('Processing...');
-
-
-                var formData = new FormData(this);
-
-                // AJAX request to the backend
-                $.ajax({
-                    url: '/form_submit',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false, // Required for FormData
-                    processData: false, // Required for FormData
-                    success: function(response) {
-                        // Assuming response contains the necessary data for ag-grid
-                        // Update the ag-grid with the new data
-                        if (gridOptions.api) {
-                            gridOptions.api.setRowData(response.rowData); // Adjust according to the actual response format
-                            // Assuming response contains the necessary data
-                            toastr.success('Data loaded successfully');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error: " + status + " - " + error);
-                        toastr.error('An error occurred');
-                    }
-                });
-            });
-
-            // Get the first process ID option's value
-            //var firstProcessId = $('#processId option:first').val();
-
-            // Set the default selected value for the Process ID dropdown
-            //$('#processId').val(firstProcessId).trigger('change');
-
-            // If you want multiple selections and wish to select the first few or more by default,
-            // you can pass an array of values to the val() function like so:
-            // var defaultProcessIds = [$('#processId option:eq(0)').val(), $('#processId option:eq(1)').val()];
-            // $('#processId').val(defaultProcessIds).trigger('change');
-
-            // Initialize Bootstrap 5 Datepicker for start date
-            var startDatepicker = new bootstrap.Datepicker(document.getElementById('startDatepicker'), {
-                format: 'yyyy-mm-dd',
-                endDate: new Date(), // Today
-                todayBtn: true,
-                todayHighlight: true,
-                autoclose: true
-            });
-
-            // Initialize Bootstrap 5 Datepicker for end date
-            var endDatepicker = new bootstrap.Datepicker(document.getElementById('endDatepicker'), {
-                format: 'yyyy-mm-dd',
-                endDate: new Date(), // Today
-                todayBtn: true,
-                todayHighlight: true,
-                autoclose: true
-            });
-
-            // Set default values for start date and end date
-            var defaultStartDate = new Date();
-            defaultStartDate.setDate(defaultStartDate.getDate() - 30); // 30 days back
-            startDatepicker.setDate(defaultStartDate);
-
-            // Set default value for end date
-            endDatepicker.setDate(new Date());
-
-            // Handle click on start date calendar icon
-            $('#startCalendarIcon').click(function() {
-                startDatepicker.show();
-            });
-
-            // Handle click on end date calendar icon
-            $('#endCalendarIcon').click(function() {
-                endDatepicker.show();
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', path='customJS/main.js') }}"></script>
 {% endblock %}

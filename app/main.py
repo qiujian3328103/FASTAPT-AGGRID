@@ -2,16 +2,23 @@ from fastapi import FastAPI, Request, Query, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
+from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import twoforms, unsplash, accordion, swly_recorder, lot_review
+from app.routers import twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming
 import pandas as pd 
 import json 
 import os 
 
 app = FastAPI()
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],  # Adjust in production
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 templates = CustomJinja2Templates(directory="templates")
 
@@ -22,6 +29,7 @@ app.include_router(twoforms.router)
 app.include_router(accordion.router)
 app.include_router(swly_recorder.router)
 app.include_router(lot_review.router)
+app.include_router(swly_naming.router)
 
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
