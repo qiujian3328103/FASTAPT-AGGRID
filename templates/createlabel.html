@@ -46,33 +46,27 @@
                 <div class = "col-md-5">
                     <form id="submit_swly_form" method="POST" action="/submit_swly_label_data/">
                         <div class="mb-3">
-                            {{process_id}} - {{lot_id}}
+                            <label for="inputRootLotId">Root Lot ID:</label>
+                            <input type="text" id="inputRootLotId" name="root_lot_id" class="form-control" placeholder=" " value={{lot_id}}>
                         </div>
                         <div class="mb-3">
-                            <label for="wafer">Wafer ID:</label>
-                            <select id="wafer" class="form-control select2" name="wafers" multiple>
-                                <option value="data1" selected>data1</option>
-                                <option value="data2">data2</option>
-                            </select>
+                            <label for="inputWaferId">Wafer ID:</label>
+                            <input type="text" id="inputWaferId" name="wafer_id" class="form-control" placeholder=" " value={{wafer_id}}>
                         </div>
                         <div class="mb-3">
-                            <label for="swly_bin">Select SWLY BINS:</label>
-                            <select id="swly_bin" class="form-control select2" name="swly_bins" multiple>
-                                <option value="BIN1001">BIN1001</option>
-                            </select>
+                            <label for="inputYield">Yield:</label>
+                            <input type="text" id="inputYield" name="yield" class="form-control" placeholder=" " value={{yield}}>
                         </div>
                         <div class="mb-3">
-                            <label for="swly_label">Select Labels:</label>
-                            <select id="swly_label" class="form-control select2" name="swly_labels" multiple>
-                                <option value="SWLY">SWLY</option>
-                            </select>
+                            <label for="inputFailBins">Fail Bins:</label>
+                            <input type="text" id="inputFailBins" name="fail_bins" class="form-control" placeholder=" " value={{fail_bins}}>
                         </div>
                         <div class="mb-3">
-                            <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-                            <textarea class="form-control" required name="description" id="exampleFormControlTextarea1" rows="3">{{description}}</textarea>
+                            <label for="inputSWLYDesc" class="form-label">Description</label>
+                            <textarea class="form-control" required name="inputSWLYDesc" id="inputSWLYDesc" rows="3">{{swly_desc}}</textarea>
                             <div id="help" class="form-text">Please provide complete Job description,requirements,perks and benefits.</div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                     </form>
                     
                 </div>
@@ -104,8 +98,9 @@
     {{ super() }}
     <script>
         // Make the template variables available to the external JS
-        var columnDefs = {{ columnDefs | safe }};
         var rowData = {{ rowData | safe }};
+        // console.log(columnDefs); // Add this to check the output in your browser console
+        console.log(rowData);  
     </script>
 
     <script src="{{ url_for('static', path='customJS/label.js') }}"></script>

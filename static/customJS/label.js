@@ -1,6 +1,50 @@
-console.log('Script loaded');
+class EditButtonComponent {
+    constructor() {
+        this.eGui = document.createElement("div");
+        this.eButton = document.createElement("button");
+        this.eButton.className = "btn btn-primary"; // Bootstrap button for styling
+        this.eButton.innerText = "Edit";
+        this.eButton.style.padding = '5px 10px'; // Smaller padding
+        this.eButton.style.fontSize = '12px'; // Smaller font size
+        this.eGui.appendChild(this.eButton);
+    }
+
+    init(params) {
+        this.params = params;
+        this.eventListener = () => {
+            this.editRow(this.params.data);
+        };
+        this.eButton.addEventListener("click", this.eventListener);
+    }
+
+    editRow(data) {
+        // Fill the form with data when the edit button is clicked
+        document.getElementById('inputRootLotId').value = data.lot_id;
+        document.getElementById('inputWaferId').value = data.wafer_id;
+        document.getElementById('inputYield').value = data.yield;
+        document.getElementById('inputFailBins').value = data.fail_bin;
+        // Add more fields as necessary
+    }
+
+    getGui() {
+        return this.eGui;
+    }
+
+    refresh(params) {
+        // Optional: Update button properties or data if needed
+        return true;
+    }
+
+    destroy() {
+        // Clean up event listeners when the button is removed from the grid
+        this.eButton.removeEventListener("click", this.eventListener);
+    }
+}
+
+
 // Declare gridOptions and gridApi globally
 var gridOptions, gridApi;
+var columnDefs; 
 
 // Define the render_image component
 var render_image = function(params) {
@@ -16,6 +60,21 @@ var dateComparator = function(filterLocalDateAtMidnight, cellValue) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+    columnDefs = [
+        {headerName: "Lot ID", field: "lot_id"},
+        {headerName: "Wafer ID", field: "wafer_id"},
+        {headerName: "Yield", field: "yield"},
+        {headerName: "Fail Bins", field: "fail_bin"},
+        {headerName: "SWLY Label", field: "swly_label"},
+        {
+            headerName: "Edit",
+            field: "edit",
+            cellRenderer: EditButtonComponent,
+        }
+    ];
+    console.log(columnDefs);  // Check if it's defined as expected
+
+
     gridOptions = {
         columnDefs: columnDefs,
         rowData: rowData,
@@ -27,21 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 comparator: dateComparator
             },
             menuTabs: ["filterMenuTab"],
-        },
-        components: {
-            render_image: render_image
-        },
-        getRowHeight: function(params) {
-            return 80; // Set a fixed row height
-        },
-        onCellClicked: function(event) {
-            if (event.column.colId === 'lot_id') {
-                var url = '/detail_page?lot_id=' + event.data.lot_id + '&wafer_id=' + event.data.wafer_id;
-                window.open(url, '_blank');
-            } else if (event.column.colId === 'wafer_id') {
-                var url = '/lot_review?lot_id=' + event.data.lot_id + '&wafer_id=' + event.data.wafer_id;
-                window.location.href = url;
-            }
         },
     };
 

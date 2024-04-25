@@ -24,7 +24,7 @@ async def lot_review(request: Request):
         {"headerName": "Wafer ID", "field": "wafer_id"},
         {"headerName": "Yield", "field": "yield"},
         {"headerName": "Fail Bins", "field": "fail_bin"},
-        {"headerName": "SWLY Label", "field": "swly_label"}
+        {"headerName": "SWLY Label", "field": "swly_label"},
     ]
     row_data = df.to_dict(orient="records")
     return templates.TemplateResponse("createlabel.html", {"request": request, 

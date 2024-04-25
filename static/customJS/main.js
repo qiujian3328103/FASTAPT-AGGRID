@@ -1,4 +1,3 @@
-console.log('Script loaded');
 // Declare gridOptions and gridApi globally
 var gridOptions, gridApi;
 
@@ -21,7 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
         rowData: rowData,
         defaultColDef: {
             flex: 1,
-            minWidth: 100,
+            minWidth: 80,
+            maxWidth:100,
+            cellStyle: { 'padding': 0, border: '1px solid'},
             filter: "agTextColumnFilter",
             filterParams: {
                 comparator: dateComparator
