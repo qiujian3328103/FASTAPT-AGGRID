@@ -1,0 +1,49 @@
+swly_label,edit_date,swly_percent,wafer_counts
+Random Defect,2024-02-01,15.4,3
+Litho Strike,2024-02-02,21.1,5
+CMP Arc Scatch,2024-02-03,20.1,12
+TBD,2024-02-04,13.2,2
+Focus Spot,2024-02-05,12.1,2
+Stripping,2024-02-06,11.1,5
+Swirl,2024-02-07,24.1,6
+Test Related,2024-02-08,23.1,8
+TS Unlanding,2024-02-09,4.1,9
+PC Footing,2024-02-10,1.1,10
+7.0 Block Etch ,2024-02-11,2.1,1
+King Kong,2024-02-12,7.8,1
+Random Defect,2024-03-11,2.4,1
+Litho Strike,2024-03-12,4.5,2
+CMP Arc Scatch,2024-03-13,6.5,5
+TBD,2024-03-14,7.8,6
+Focus Spot,2024-03-15,9.1,7
+Stripping,2024-03-16,2.1,3
+Swirl,2024-03-17,22.1,2
+Test Related,2024-03-18,12.1,1
+TS Unlanding,2024-03-19,11.1,4
+PC Footing,2024-03-20,9.1,7
+7.0 Block Etch ,2024-03-21,8.1,12
+King Kong,2024-03-22,7.1,2
+Random Defect,2024-04-04,13.1,3
+Litho Strike,2024-04-05,23.1,2
+CMP Arc Scatch,2024-04-06,23.1,15
+TBD,2024-04-07,24.1,2
+Focus Spot,2024-04-08,6,2
+Stripping,2024-04-09,1,1
+Swirl,2024-04-10,2,2
+Test Related,2024-04-11,3.4,5
+TS Unlanding,2024-04-12,4.2,2
+PC Footing,2024-04-13,8.1,9
+7.0 Block Etch ,2024-04-14,9.4,1
+King Kong,2024-04-15,8.1,2
+Random Defect,2024-01-01,3.2,3
+Litho Strike,2024-01-02,2.1,2
+CMP Arc Scatch,2024-01-03,1.1,4
+TBD,2024-01-04,0.1,5
+Focus Spot,2024-01-05,2.1,4
+Stripping,2024-01-06,5.6,2
+Swirl,2024-01-07,9.1,1
+Test Related,2024-01-08,2.1,5
+TS Unlanding,2024-01-09,3.1,8
+PC Footing,2024-01-10,4.1,12
+7.0 Block Etch ,2024-01-11,2.1,5
+King Kong,2024-01-12,23,8

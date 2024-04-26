@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% set active_page = "swly_anlaysis" %}
+{% block title %}SWLY Label{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    <main role="main" style="padding-top: 70px;">
+        <div closs="row mb-3">
+            <form id="dataForm_search_lot" action="/form_search_lot" method="post">
+                <div class="row mb-4">
+                    <div class="col">
+                        <input type="text" class="form-control" id="inputRootLotId" placeholder="RootLotID">
+                      </div>
+                    <div class="col">
+                        <label for="submitButton"></label>
+                        <button type="submit" class="btn btn-primary mt-md-4">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <hr/>
+        <div class="row">
+            <div id="highchart-chart"></div>
+        </div>
+
+    </main>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var data = {{ data | safe }};
+            Highcharts.chart('highchart-chart', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Monthly Wafer Counts by SWLY Label'
+                },
+                xAxis: {
+                    categories: Object.keys(data),
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Wafer Counts'
+                    },
+                    stackLabels: {
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: 'gray'
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+                series: Object.keys(data[Object.keys(data)[0]]).map(swly_label => ({
+                    name: swly_label,
+                    data: Object.keys(data).map(month => data[month][swly_label] || 0)
+                }))
+            });
+        });
+        </script>
+{% endblock %}
