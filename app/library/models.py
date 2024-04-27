@@ -21,7 +21,7 @@ class SWLY_LABEL_DATA(Base):
 class SWLY_LABEL_LIST(Base):
     __tablename__ = "swly_name_table"
     
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     process_id = Column(String)
     layer = Column(String)
     tool = Column(String)

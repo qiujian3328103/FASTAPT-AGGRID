@@ -1,0 +1,19 @@
+id,process_id,layer,tool,bin_lst,signature,type,desc,name,user,last_update
+1,AAAA,,,,,Baseline,,Litho_Strike,root,2024-04-02
+2,AAAA,,,,,Baseline,,CMP Arc Scratch,root,2024-04-03
+3,AAAA,,,,,Baseline,,Random Scatter,root,2024-04-04
+4,AAAA,,,,,Baseline,,Focus Spot,root,2024-04-05
+5,AAAA,,,,,Baseline,,Swril,root,2024-04-06
+6,AAAA,,,,,Baseline,,Patch ,root,2024-04-07
+7,BBBB,,,,,Baseline,,Litho_Strike,root,2024-04-08
+8,BBBB,,,,,Baseline,,CMP Arc Scratch,root,2024-04-09
+9,BBBB,,,,,Baseline,,Random Scatter,root,2024-04-10
+10,BBBB,,,,,Baseline,,Focus Spot,root,2024-04-11
+11,BBBB,,,,,Baseline,,Swril,root,2024-04-12
+12,BBBB,,,,,Baseline,,Patch ,root,2024-04-13
+13,CCCC,,,,,Baseline,,Litho_Strike,root,2024-04-08
+14,CCCC,,,,,Baseline,,CMP Arc Scratch,root,2024-04-09
+15,CCCC,,,,,Baseline,,Random Scatter,root,2024-04-10
+16,CCCC,,,,,Baseline,,Focus Spot,root,2024-04-11
+17,CCCC,,,,,Baseline,,Swril,root,2024-04-12
+18,CCCC,,,,,Baseline,,Patch ,root,2024-04-13

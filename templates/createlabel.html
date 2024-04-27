@@ -44,26 +44,46 @@
         <hr/>
         <div class="row mb-3">
                 <div class = "col-md-5">
-                    <form id="submit_swly_form" method="POST" action="/submit_swly_label_data/">
-                        <div class="mb-3">
-                            <label for="inputRootLotId">Root Lot ID:</label>
-                            <input type="text" id="inputRootLotId" name="root_lot_id" class="form-control" placeholder=" " value={{lot_id}}>
+                    <form id="submit_swly_list" method="post" action="/submit_swly_list_data">
+                        <div class="row">
+                            <div class="col">
+                                <div class="col">
+                                    <label for="inputProcessId">ProcessID:</label>
+                                    <input type="text" id="inputProcessId" name="processid_label" class="form-control" placeholder=" " value="">
+                                </div>
+                                <div class="col">
+                                    <label for="inputLayer">Layer:</label>
+                                    <input type="text" id="inputLayer" name="layer_label" class="form-control" placeholder=" " value="">
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="inputWaferId">Wafer ID:</label>
-                            <input type="text" id="inputWaferId" name="wafer_id" class="form-control" placeholder=" " value={{wafer_id}}>
+                            <label for="inputTool">BIN List:</label>
+                            <input type="text" id="inputTool" name="tool_label" class="form-control" placeholder=" " value="">
                         </div>
                         <div class="mb-3">
-                            <label for="inputYield">Yield:</label>
-                            <input type="text" id="inputYield" name="yield" class="form-control" placeholder=" " value={{yield}}>
+                            <label for="inputBins">BIN List:</label>
+                            <input type="text" id="inputBins" name="bin_label" class="form-control" placeholder=" " value="">
                         </div>
                         <div class="mb-3">
-                            <label for="inputFailBins">Fail Bins:</label>
-                            <input type="text" id="inputFailBins" name="fail_bins" class="form-control" placeholder=" " value={{fail_bins}}>
+                            <label for="inputSignature">Signature:</label>
+                            <input type="text" id="inputSignature" name="signature_label" class="form-control" placeholder=" " value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputType">Type:</label>
+                            <input type="text" id="inputType" name="type_label" class="form-control" placeholder=" " value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputUser">User:</label>
+                            <input type="text" id="inputUser" name="user_label" class="form-control" placeholder=" " value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputSWLYName">SWLY Name:</label>
+                            <input type="text" id="inputSWLYName" required name="swly_label" class="form-control" placeholder=" " value="">
                         </div>
                         <div class="mb-3">
                             <label for="inputSWLYDesc" class="form-label">Description</label>
-                            <textarea class="form-control" required name="inputSWLYDesc" id="inputSWLYDesc" rows="3">{{swly_desc}}</textarea>
+                            <textarea class="form-control" name="description" id="inputSWLYDesc" rows="3">""</textarea>
                             <div id="help" class="form-text">Please provide complete Job description,requirements,perks and benefits.</div>
                         </div>
                         <button type="submit" class="btn btn-primary">Update</button>

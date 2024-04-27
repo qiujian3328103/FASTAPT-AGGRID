@@ -18,11 +18,18 @@ class EditButtonComponent {
     }
 
     editRow(data) {
+        console.log("*************")
+        console.log(data);
         // Fill the form with data when the edit button is clicked
-        document.getElementById('inputRootLotId').value = data.lot_id;
-        document.getElementById('inputWaferId').value = data.wafer_id;
-        document.getElementById('inputYield').value = data.yield;
-        document.getElementById('inputFailBins').value = data.fail_bin;
+        document.getElementById('inputProcessId').value = data.process_id;
+        document.getElementById('inputLayer').value = data.layer;
+        document.getElementById('inputBins').value = data.bin_lst;
+        document.getElementById('inputSignature').value = data.signature;
+        document.getElementById('inputUser').value = data.user;
+        document.getElementById('inputSWLYName').value = data.name;
+        document.getElementById('inputSWLYDesc').value = data.desc;
+        document.getElementById('inputTool').value = data.tool;
+        document.getElementById('inputType').value = data.type;
         // Add more fields as necessary
     }
 
@@ -61,20 +68,23 @@ var dateComparator = function(filterLocalDateAtMidnight, cellValue) {
 
 document.addEventListener('DOMContentLoaded', function() {
     columnDefs = [
-        {headerName: "Lot ID", field: "lot_id"},
-        {headerName: "Wafer ID", field: "wafer_id"},
-        {headerName: "Yield", field: "yield"},
-        {headerName: "Fail Bins", field: "fail_bin"},
-        {headerName: "SWLY Label", field: "swly_label"},
         {
             headerName: "Edit",
             field: "edit",
             cellRenderer: EditButtonComponent,
-        }
+        },
+        {"headerName": "process_id", "field": "process_id"},
+        {"headerName": "Layer", "field": "layer"},
+        {"headerName": "EQP", "field": "tool"},
+        {"headerName": "Bins", "field": "bin_lst"},
+        {"headerName": "Signature", "field": "signature"},
+        {"headerName": "Type", "field": "type"},
+        {"headerName": "SWLY_Name", "field": "name"},
+        {"headerName": "Desc", "field": "desc"},
+        {"headerName": "User", "field": "user"},
+        {"headerName": "Last Update", "field": "last_update"},
+
     ];
-    console.log(columnDefs);  // Check if it's defined as expected
-
-
     gridOptions = {
         columnDefs: columnDefs,
         rowData: rowData,
@@ -100,3 +110,25 @@ $(document).ready(function() {
         allowClear: true,
     });
 })
+
+$("#submit_swly_list").submit(function (e) {
+    e.preventDefault();
+
+    var formData = new FormData(this);
+    console.log(formData);
+    $.ajax({
+        url: "/submit_swly_list_data",
+        type: "POST",
+        data: formData, 
+        contentType: false, 
+        processData: false,
+        success: function (response) {
+            if (gridApi) {
+                gridApi.setRowData(response.rowData);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText); // Log response text which might contain useful error messages
+        }
+    });
+});

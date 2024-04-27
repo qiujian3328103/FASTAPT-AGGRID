@@ -93,7 +93,7 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
     swly_labels = ["CMP Arc Scartch", "Over Polish", "Focus Spot", "TS Unlanded", "PC-TS UnderShort", "PC Footing"]
     
     # setup swly_bins
-    swly_bins = ["BIN1001", "BIN1002", "BIN1003", "BIN1004"]
+    swly_bins = ["BIN1001", "BIN1002", "BIN1003", "BIN1004", "BIN1019", "BIN1018", "BIN1017", "BIN1016"]
     
     # read the bindata.csv and render the data to html page 
     df_bins = pd.read_csv(r"/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/tests/bindata.csv", index_col=False)
