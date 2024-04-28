@@ -48,16 +48,14 @@
 </head>
 
 <body>
-    <div class="wrapper">
-        {% include 'include/sidebar.html' %}
-        <!-- Page Content  -->
-        <div id="content">
-            {% include 'include/topnav.html' %}
-            {% block page_content %}
-            {% endblock %}
-        </div>
+
+    {% include 'include/sidebar.html' %}
+    <!-- Page Content  -->
+    {% include 'include/topnav.html' %}
+    <div id="content">
+        {% block page_content %}
+        {% endblock %}
     </div>
-    <div class="overlay"></div>
 
     <!-- the thrid party java script needs to out of the block script  -->
     <script src="{{ url_for('static', path='js/jquery-3.4.1.min.js') }}"></script>

@@ -111,24 +111,21 @@ $(document).ready(function() {
     });
 })
 
-$("#submit_swly_list").submit(function (e) {
+$("#submit_swly_form").submit(function (e) {
     e.preventDefault();
 
     var formData = new FormData(this);
-    console.log(formData);
+    console.log(formDat);
     $.ajax({
-        url: "/submit_swly_list_data",
-        type: "POST",
+        url: "/submit_swly_label_data",
+        type:"POST",
         data: formData, 
         contentType: false, 
-        processData: false,
-        success: function (response) {
+        processData: false, 
+        success: function (response){
             if (gridApi) {
-                gridApi.setRowData(response.rowData);
+                gridApi.setGridOption("rowData", response.rowData);
             }
         },
-        error: function (xhr, status, error) {
-            console.log(xhr.responseText); // Log response text which might contain useful error messages
-        }
-    });
+    })
 });
