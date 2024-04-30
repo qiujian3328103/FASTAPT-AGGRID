@@ -5,7 +5,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing
+from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing
+from admin.routers import user
 import pandas as pd 
 import json 
 import os 
@@ -32,12 +33,12 @@ app.include_router(lot_review.router)
 app.include_router(swly_naming.router)
 app.include_router(swly_analysis.router)
 app.include_router(swly_listing.router)
+app.include_router(user.router)
+app.include_router(info.router)
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
 #     data = openfile("home.md")
 #     return templates.TemplateResponse("page.html", {"request": request, "data": data})
-
-
 
 
 @app.get("/page/{page_name}", response_class=HTMLResponse)

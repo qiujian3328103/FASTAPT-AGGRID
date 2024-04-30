@@ -120,29 +120,5 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-    {%comment%}
-        <script>
-            function retrieveData() {
-                var processIds = $('#processId').val();
-                var stepId = $('#stepId').val();
-                var sigma = $('#sigma').val();
-                
-                // Make an AJAX request to the backend
-                $.ajax({
-                    type: "GET",
-                    url: "/update_data",
-                    data: {processIds: processIds, stepId: stepId, sigma: sigma},
-                    traditional: true,
-                    success: function(data) {
-                        // Update ag-Grid with new data
-                        var gridOptions = agGrid.simpleHttpRequest({ url: '/update_data' });
-                        gridOptions.api.setRowData(data.rowData);
-                        gridOptions.api.setColumnDefs(data.columnDefs);
-                    },
-                    error: function(error) {
-                        console.error('Error retrieving data:', error);
-                    }
-                });
-            }
-        </script>  
-    {%endcomment%}
+# markdown profile generate website
+https://rahuldkjain.github.io/gh-profile-readme-generator/
