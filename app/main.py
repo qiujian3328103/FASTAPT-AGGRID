@@ -1,17 +1,26 @@
-from fastapi import FastAPI, Request, Query, Form
+from fastapi import FastAPI, Request, Query, Form, Depends
+
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing
-from admin.routers import user
+from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth
+from starlette.middleware.sessions import SessionMiddleware
+from typing import Tuple, List, Dict, Annotated, Union
+from fastapi_auth_middleware import AuthMiddleware
+from fastapi.security import OAuth2PasswordBearer
 import pandas as pd 
 import json 
 import os 
 
+SECRET_KEY = "your_jwt_secret_key"  # Ensure this matches how you generate/sign tokens
+
 app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
 
 # app.add_middleware(
 #     CORSMiddleware,
@@ -22,7 +31,9 @@ app = FastAPI()
 # )
 
 templates = CustomJinja2Templates(directory="templates")
-
+# Adding middleware for session management
+# app.add_middleware(SessionMiddleware, secret_key="YOUR_SECRET_KEY")
+# app.add_middleware(AuthMiddleware, verify_header=verify_authorization_header)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(unsplash.router)
@@ -33,8 +44,10 @@ app.include_router(lot_review.router)
 app.include_router(swly_naming.router)
 app.include_router(swly_analysis.router)
 app.include_router(swly_listing.router)
-app.include_router(user.router)
 app.include_router(info.router)
+app.include_router(login.router)
+app.include_router(auth.admin_router)
+
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
 #     data = openfile("home.md")

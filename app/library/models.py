@@ -4,9 +4,23 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timezone 
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel 
+from starlette.authentication import BaseUser
+
 Base = declarative_base()
+
+class FastAPIUser(BaseUser):
+    def __init__(self, email: str, scopes: List[str]):
+        self.email = email
+        self.scopes = scopes
+
+    @property
+    def identity(self):
+        return self.email
+
+    def __str__(self):
+        return self.email
 
 
 class SWLYLabelListUpdate(BaseModel):
@@ -21,6 +35,27 @@ class SWLYLabelListUpdate(BaseModel):
     user: Optional[str]
     last_update: Optional[datetime]
 
+class ACCOUNT_DATA(Base):
+    __tablename__ = "accounts"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String, index=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    email = Column(String)
+    auth = Column(String)
+    last_update = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "first_name": self.first_name, 
+            "last_name": self.last_name, 
+            "email": self.email,
+            "auth": self.auth,
+            "last_update": self.last_update.isoformat() if self.last_update else None
+        }
+    
 
 class SWLY_LABEL_DATA(Base):
     __tablename__ = "swly_label_data"

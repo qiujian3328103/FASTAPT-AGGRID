@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% set active_page = "label_review" %}
+{% block title %}SWLY Label{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style>    
+    </style>
+{% endblock %}
+
+{% block page_content %}
+<main role="main" style="padding-top: 70px;">
+    <div class="row mb-3">
+        <div class = "col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <form id="dataForm_user_create" action="/form_create_form" method="post">
+                        <div class="row mb-3">
+                            <div class="form-group">
+                                <label for="username">User Account</label>
+                                <input type="text" id="username" name="username" class="form-control" placeholder=" " value="">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6 form-group">
+                                <label for="first_name">First Name</label>
+                                <input type="first_name" class="form-control" id="first_name" name="first_name" placeholder="name@example.com">
+                            </div>  
+                            <div class="col-md-6 form-group">
+                                <label for="last_name">First Name</label>
+                                <input type="last_name" class="form-control" id="last_name" name="last_name" placeholder="name@example.com">
+                            </div>  
+                        </div>
+                        <div class="row mb-3">
+                            <div class="form-group">
+                                <label for="email">Email address</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                            </div>  
+                        </div>
+                        <div class="row mb-3">
+                            <div class="form-group">
+                                <label for="role">User Role</label>
+                                <select class="form-select" id="role" name="role" aria-label="Default select example">
+                                    <option value="Reader" selected>Reader</option>
+                                    <option value="Editor">Editor</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class = "col-md-7">
+            <div id="ag-grid-account" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Make the template variables available to the external JS
+        var rowData = {{ accounts | safe }};
+    </script>
+
+    <script src="{{ url_for('static', path='customJS/admin.js') }}"></script>
+{% endblock %}

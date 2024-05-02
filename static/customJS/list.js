@@ -150,8 +150,15 @@ function submitEditForm() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData)
-    }).then(response => response.json())
-      .then(data => {
+    }).then(response => {
+        if (!response.ok) {
+            if (response.status === 403) {
+                $('#errorModal').modal('show');
+            }
+            throw new Error('Failed to update the item');
+        }
+        return response.json();
+    }).then(data => {
           console.log('Success:', data);
           $('#editModal').modal('hide');
           reloadData();

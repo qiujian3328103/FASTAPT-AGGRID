@@ -12,13 +12,15 @@ from app.library.database import get_db
 from app.library.models import SWLY_LABEL_LIST, SWLYLabelListUpdate
 from datetime import datetime 
 from fastapi import HTTPException
-
+from app.routers.auth import User
+from app.routers.auth import get_current_username
 router = APIRouter()
 templates = CustomJinja2Templates(directory="templates")
 
 
 @router.get("/swly_list", response_class=HTMLResponse)
 async def lot_review(request: Request, db:Session=Depends(get_db)):
+
     process = db.query(SWLY_LABEL_LIST.process_id).distinct().all()
     process_ids = [row.process_id for row in process]
     query_result = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id==process_ids[0]).order_by(SWLY_LABEL_LIST.last_update.desc()).all()
@@ -46,19 +48,25 @@ async def lot_review(request: Request, db:Session=Depends(get_db)):
                                                            "rowData":json.dumps(row_data)})
     
 @router.put("/edit_row/{process_id}/{name}")
-async def edit_row(process_id: str, name: str, item: SWLYLabelListUpdate, db: Session = Depends(get_db)):
-    db_item = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id == process_id, SWLY_LABEL_LIST.name == name).first()
-    print(item.name)
-    print(item.desc)
-    if db_item:
-        # Here, update fields if they are provided in the request
-        db_item.name = item.name if item.name else db_item.name
-        db_item.desc = item.desc if item.desc else db_item.desc
-        db_item.user = item.user if item.user else db_item.user
-        # Repeat for other fields...
-        db.commit()
+async def edit_row(process_id: str, name: str, item: SWLYLabelListUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_username)):
+    print(current_user)
+    if current_user.auth not in ["Admin"]:
+        raise HTTPException(status_code=403, detail="User not authorized to edit")
     else:
-        raise HTTPException(status_code=404, detail="Item not found")
+        db_item = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id == process_id, SWLY_LABEL_LIST.name == name).first()
+        print(item.name)
+        print(item.desc)
+        
+        
+        if db_item:
+            # Here, update fields if they are provided in the request
+            db_item.name = item.name if item.name else db_item.name
+            db_item.desc = item.desc if item.desc else db_item.desc
+            db_item.user = item.user if item.user else db_item.user
+            # Repeat for other fields...
+            db.commit()
+        else:
+            raise HTTPException(status_code=404, detail="Item not found")
 
 @router.delete("/delete_row/{process_id}/{name}")
 async def delete_row(process_id: str, name: str, db: Session = Depends(get_db)):
