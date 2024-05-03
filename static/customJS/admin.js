@@ -44,7 +44,48 @@ class EditButtonComponent {
     }
 }
 
+function submitEditForm() {
+    var formData = {
+        user_id: $('#dataForm_user_create #username').val(),
+        first_name: $('#dataForm_user_create #first_name').val(),
+        last_name: $('#dataForm_user_create #last_name').val(),
+        email: $('#dataForm_user_create #email').val(),
+        auth: $('#dataForm_user_create #role').val(),
+        // Include other fields as necessary
+    };
 
+    // Send the data to the server using fetch or jQuery's ajax method
+    fetch(`/edit_admin/${formData.user_id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    }).then(response => response.json()).then(data => {
+          console.log('Success:', data);
+        //   $('#editModal').modal('hide');
+          reloadData();
+          // Optionally refresh the grid or handle UI update
+      }).catch(error => {
+          console.error('Error:', error);
+      });
+}
+
+
+// Handle form submission to prevent default action
+document.getElementById('dataForm_user_create').addEventListener('submit', function(event) {
+    event.preventDefault();  // This stops the page from refreshing
+    submitEditForm();
+});
+
+function reloadData() {
+    fetch('/admin_reload')
+        .then(response => response.json())
+        .then(data => {
+            gridApi.setRowData(data);
+        })
+        .catch(error => console.error('Error loading the data:', error));
+}
 
 // Declare gridOptions and gridApi globally
 var gridOptions, gridApi;

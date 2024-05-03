@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status, APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from typing import Tuple, List, Optional
 from app.library.database import get_db
@@ -9,6 +9,14 @@ from pydantic import BaseModel
 from app.library.helper import CustomJinja2Templates
 import jwt
 import os 
+
+class UpdateUser(BaseModel):
+    user_id: str 
+    first_name: str 
+    last_name: str 
+    email: str 
+    auth: str 
+    password: Optional[str]
 
 # this is the schema 
 class User(BaseModel):
@@ -55,5 +63,25 @@ async def admin(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "accounts": account_data  # Adding accounts data to the context
-    })      
+    })
+
+@admin_router.put("/edit_admin/{user_id}", response_class=JSONResponse)
+async def edit_row(user_id: str, item: UpdateUser, db: Session = Depends(get_db)):
+    db_item = db.query(ACCOUNT_DATA).filter(ACCOUNT_DATA.user_id == user_id).first()
+    if db_item:
+        db_item.first_name = item.first_name or db_item.first_name
+        db_item.last_name = item.last_name or db_item.last_name
+        db_item.auth = item.auth or db_item.auth
+        db_item.email = item.email or db_item.email
+        db.commit()
+        return {"status": "success", "message": "User updated successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+@admin_router.get("/admin_reload", response_class=JSONResponse)
+async def lot_review(request: Request, db: Session = Depends(get_db)):
+    query_result = db.query(ACCOUNT_DATA).all()
+    row_data = [record.to_dict() for record in query_result]
+    return row_data
+     
              
