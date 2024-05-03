@@ -55,7 +55,9 @@
     <div id="content">
         {% block page_content %}
         {% endblock %}
+        {% include 'include/footer.html' %}
     </div>
+    
 
     <!-- the thrid party java script needs to out of the block script  -->
     <script src="{{ url_for('static', path='js/jquery-3.4.1.min.js') }}"></script>
