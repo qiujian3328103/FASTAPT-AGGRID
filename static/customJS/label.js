@@ -111,6 +111,7 @@ $(document).ready(function() {
     });
 })
 
+
 $("#submit_swly_form").submit(function (e) {
     e.preventDefault();
 
@@ -127,5 +128,51 @@ $("#submit_swly_form").submit(function (e) {
                 gridApi.setGridOption("rowData", response.rowData);
             }
         },
-    })
+        error: function(){
+            if (xhr.status === 403) {
+                $('#unauthorizedModal').modal('show');
+            } else {
+                console.error('Error:', error);
+            }
+        },
+    });
 });
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('submit_swly_list');
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        var formData = new FormData(form);
+
+        fetch('/submit_swly_list_data', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 403) {
+                throw new Error('Unauthorized');
+            } else {
+                throw new Error('Some error occurred');
+            }
+        }).then(data => {
+            if (gridApi) {
+                gridApi.setRowData(data.rowData);
+            }
+        }).catch(error => {
+            if (error.message === 'Unauthorized') {
+                $('#unauthorizedModal').modal('show');
+            } else {
+                console.error('Error:', error);
+            }
+        });
+    };
+});
+
+function closeModal() {
+    $('#unauthorizedModal').modal('hide');
+}
+// Attach the closeModal function to the Cancel button
+document.getElementById('closeUnauthorizedModal').onclick = closeModal;

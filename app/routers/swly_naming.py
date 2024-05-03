@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, APIRouter, Query, Depends
+from fastapi import FastAPI, Request, Form, APIRouter, Query, Depends, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import os
@@ -10,6 +10,7 @@ from app.library.helper import CustomJinja2Templates
 from sqlalchemy.orm import Session 
 from app.library.database import get_db
 from app.library.models import SWLY_LABEL_LIST
+from app.routers.auth import get_current_username, User
 from datetime import datetime 
 
 router = APIRouter()
@@ -18,13 +19,6 @@ templates = CustomJinja2Templates(directory="templates")
 
 @router.get("/label_review", response_class=HTMLResponse)
 async def lot_review(request: Request, db:Session=Depends(get_db)):
-    
-    # df = pd.read_csv("app/Book1.csv")  # Change the path to your CSV file
-    
-    # Convert DataFrame to JSON for ag-Grid
-    # column_defs = [{"headerName": col, "field": col} for col in df.columns]
-    # Convert DataFrame to JSON for ag-Grid
-    print("pass")
     process = db.query(SWLY_LABEL_LIST.process_id).distinct().all()
     process_ids = [row.process_id for row in process]
     
@@ -77,9 +71,11 @@ async def add_or_update_label_data(request: Request,
                                    signature_label: Optional[str] = Form(None),
                                    type_label:Optional[str] = Form(None),
                                    description: Optional[str] = Form(None),
-                                   db: Session=Depends(get_db)
+                                   db: Session=Depends(get_db),
+                                   current_user: User = Depends(get_current_username)
                                    ):
-    print(processid_label)
+    if current_user.auth not in ["Reader", "Admin", "Editor"]:
+        raise HTTPException(status_code=403, detail="User not authorized to edit")
     try:
         existing_record = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id==processid_label, 
                                                         SWLY_LABEL_LIST.name == swly_label).first()  
