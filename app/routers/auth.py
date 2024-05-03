@@ -83,5 +83,32 @@ async def lot_review(request: Request, db: Session = Depends(get_db)):
     query_result = db.query(ACCOUNT_DATA).all()
     row_data = [record.to_dict() for record in query_result]
     return row_data
-     
-             
+
+
+@admin_router.delete("/delete_user/{user_id}", response_class=JSONResponse)
+async def delete_row(user_id: str, db: Session = Depends(get_db)):
+    db_item = db.query(ACCOUNT_DATA).filter(ACCOUNT_DATA.user_id == user_id).first()
+    if db_item:
+        db.delete(db_item)
+        db.commit()
+        return {"status": "success", "message": "User deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    
+@admin_router.post("/create_admin", response_class=JSONResponse)
+async def create_user(item: UpdateUser, db: Session = Depends(get_db)):
+    existing_user = db.query(ACCOUNT_DATA).filter(ACCOUNT_DATA.user_id == item.user_id).first()
+    if existing_user:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Cannot add this user since it already exists in the current database"})
+
+    new_user = ACCOUNT_DATA(
+        user_id=item.user_id,
+        first_name=item.first_name,
+        last_name=item.last_name,
+        email=item.email,
+        auth=item.auth,
+    )
+    db.add(new_user)
+    db.commit()
+    return {"status": "success", "message": "New user added"}

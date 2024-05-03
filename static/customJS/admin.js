@@ -44,6 +44,59 @@ class EditButtonComponent {
     }
 }
 
+class DeleteButtonComponent {
+    constructor() {
+        this.eGui = document.createElement("div");
+        this.eButton = document.createElement("button");
+        this.eButton.className = "btn btn-danger";
+        this.eButton.innerText = "Delete";
+        this.eButton.style.padding = '5px 10px';
+        this.eButton.style.fontSize = '12px';
+        this.eGui.appendChild(this.eButton);
+    }
+
+    init(params) {
+        this.params = params;
+        this.eButton.onclick = () => {
+            this.showDeleteModal(this.params.data);
+        };
+    }
+
+    showDeleteModal(data) {
+        $('#deleteModal').modal('show');
+        $('#confirmDelete').off('click').on('click', () => this.deleteRow(data));
+    }
+
+    deleteRow(data) {
+        fetch(`/delete_user/${data.user_id}`, { method: 'DELETE' })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete the item');
+                return response.json();
+            })
+            .then(result => {
+                console.log('Success:', result);
+                $('#deleteModal').modal('hide');
+                reloadData();  // Refresh the grid to reflect the deletion
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    getGui() {
+        return this.eGui;
+    }
+
+    refresh(params) {
+        return true;
+    }
+
+    destroy() {
+        this.eButton.removeEventListener("click", this.onclick);
+    }
+}
+
+
 function submitEditForm() {
     var formData = {
         user_id: $('#dataForm_user_create #username').val(),
@@ -71,11 +124,44 @@ function submitEditForm() {
       });
 }
 
+function submitCreateForm() {
+    var formData = {
+        user_id: $('#username').val(),
+        first_name: $('#first_name').val(),
+        last_name: $('#last_name').val(),
+        email: $('#email').val(),
+        auth: $('#role').val(),
+    };
+
+    fetch('/create_admin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    }).then(response => response.json()).then(data => {
+        if (data.status === "success") {
+            alert('New user added');
+        } else {
+            alert(data.message); // User already exists or other errors
+        }
+        reloadData(); // Refresh the AG-Grid data
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 // Handle form submission to prevent default action
-document.getElementById('dataForm_user_create').addEventListener('submit', function(event) {
-    event.preventDefault();  // This stops the page from refreshing
-    submitEditForm();
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('update_current_user').addEventListener('click', function(event) {
+        event.preventDefault();
+        submitEditForm(); // This function should handle updating the user
+    });
+
+    document.getElementById('create_new_user').addEventListener('click', function(event) {
+        event.preventDefault();
+        submitCreateForm(); // This function will handle creating a new user
+    });
 });
 
 function reloadData() {
@@ -98,6 +184,11 @@ document.addEventListener('DOMContentLoaded', function() {
             field: "edit",
             cellRenderer: EditButtonComponent,
         },
+        {
+            headerName: "Delete",
+            field: "delete",
+            cellRenderer: DeleteButtonComponent,
+        },
         {headerName: "Username", field: "user_id"},
         {headerName: "First Name", field: "first_name"},
         {headerName: "Last Name", field: "last_name"},
@@ -119,3 +210,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var gridDiv = document.querySelector('#ag-grid-account');
     gridApi = agGrid.createGrid(gridDiv, gridOptions);
 });
+
+function closeModal() {
+    $('#deleteModal').modal('hide');
+}
+
+// Attach the closeModal function to the Cancel button
+document.getElementById('cancelDelete').onclick = closeModal;
