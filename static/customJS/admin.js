@@ -1,3 +1,4 @@
+
 class EditButtonComponent {
     constructor() {
         this.eGui = document.createElement("div");

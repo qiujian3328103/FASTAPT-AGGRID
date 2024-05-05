@@ -325,6 +325,7 @@
             console.error("Container not found:", containerId);
             return;
         }
+        console.log(data);
         const max_x = d3.max(data, ({ x }) => x);
         const max_y = d3.max(data, ({ y }) => y);
         const min_x = d3.min(data, ({ x }) => x);

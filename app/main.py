@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth
+from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap
 from starlette.middleware.sessions import SessionMiddleware
 from typing import Tuple, List, Dict, Annotated, Union
 from fastapi_auth_middleware import AuthMiddleware
@@ -47,6 +47,7 @@ app.include_router(swly_listing.router)
 app.include_router(info.router)
 app.include_router(login.router)
 app.include_router(auth.admin_router)
+app.include_router(view_wafermap.router)
 
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):

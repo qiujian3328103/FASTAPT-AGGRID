@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}SWLY Label{% endblock %}
+
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+
+{% block page_content %}
+<main role="main" style="padding-top: 70px;">
+    <div class="container-fluid">
+        <div class="row">
+            <form id="dataForm_wafermap">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="processId">root_lot_id</label>
+                        <input type="text" class="form-control" id="root_lot_id" name="root_lot_id" value="{{root_lot_id}}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="stepId">Step ID</label>
+                        <select id="stepId" class="form-control" name="stepId">
+                            {% for step_id in step_ids %}
+                                <option value="{{ step_id }}" selected>{{ step_id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="startDate">Start Date</label>
+                        <div class="input-group date" id="startDatepicker">
+                            <input type="text" class="form-control" id="startDate" name="startDate">
+                            <span class="input-group-text bg-light d-block">
+                                <i class="fa fa-calendar" id="startCalendarIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="endDate">End Date</label>
+                        <div class="input-group date" id="endDatepicker">
+                            <input type="text" class="form-control" id="endDate" name="endDate"/>
+                            <span class="input-group-text bg-light d-block">
+                                <i class="fa fa-calendar" id="endCalendarIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="submitButton"></label>
+                        <button type="submit" class="btn btn-primary mt-md-4">Retrieve</button>
+                    </div>
+                </div>
+            </form>
+            <hr/>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    {% for i in range(1, 26) %}
+                        <div class="col-md-2 mb-2 p-1">
+                            <div class="card">
+                                <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 12px;">
+                                    {{ root_lot_id }}-W{{ '%02d' | format(i) }}
+                                </div>
+                                <div class="card-body">
+                                    <div id="{{root_lot_id}}-{{ i }}" style="width: 100%; height: 200px;"></div>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" class="btn btn-primary">Click</button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card">
+                    <div class="card-body">
+                        test
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Select process IDs",
+                allowClear: true,
+            });
+        });
+    </script>
+    <script>
+        <!-- const rawData = {{ waferData|safe }};
+        // console.log("Raw Data:", rawData);
+        const rect_width = {{ rectWidth|safe }};
+        const rect_height = {{ rectHeight|safe }}; -->
+
+        function drawWaferMap(data, containerId) {
+            const svgContainer = document.getElementById(containerId);
+            // console.log(containerId);
+            if (!svgContainer) {
+                console.error("Container not found:", containerId);
+                return;
+            }
+            // console.log(max_x)
+            const radius = 150;
+            console.log(`max_x: ${max_x}, max_y: ${max_y}, min_x: ${min_x}, min_y: ${min_y}`);
+            const svg = d3.create("svg")
+                .attr("viewBox", [-150, -150,300, 300]);
+
+                const c1 = svg.append("circle")
+                .style("fill", "gray")
+                .style("stroke", "black")
+                .style("stroke-width", 0.025)
+                .attr("r", radius + 0.2)
+                .attr("cx", 0.5)
+                .attr("cy", 0.5);
+
+                const c2 = svg.append("circle")
+                .style("fill", "gray")
+                .style("stroke", "black")
+                .style("stroke-width", 0.025)
+                .attr("r", radius)
+                .attr("cx", 0.5)
+                .attr("cy", 0.5);
+
+                const g = svg.append("g").selectAll("rect")
+                .data(data)
+                .join("rect")
+                .attr("x", ({x}) => x)
+                .attr("y", ({y}) => y)
+                .attr("width", rect_width )
+                .attr("height",rect_height)
+                .attr("fill", ({color}) => color)
+                .attr("stroke", "white")
+                .attr("stroke-width", 0.025)
+
+                svg.selectAll("rect")
+                    .data(data)
+                    .append("svg:title")
+                    .text(({mouseover}) => mouseover);
+
+                svg.call(d3.zoom()
+                    .extent([[0, 0], [200, 200]])
+                    .scaleExtent([1, 8])
+                    .on("zoom", zoomed));
+
+                function zoomed({ transform }) {
+                    g.attr("transform", transform);
+                    c1.attr("transform", transform);
+                    c2.attr("transform", transform);
+                }
+                svg.on("mousedown", function() {
+                    // Prevent drag
+                    d3.event.preventDefault();
+                });
+
+            document.getElementById(containerId).appendChild(svg.node());
+            // svgContainer.appendChild(svg.node());
+        }
+
+    </script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        let svg;
+        let zoom;
+        let g;
+        let s;
+        
+        function drawWaferMap(data, rect_width, rect_height, containerId) {
+            const svgContainer = document.getElementById(containerId);
+            // console.log(containerId);
+            if (!svgContainer) {
+                console.error("Container not found:", containerId);
+                return;
+            }
+            // console.log(max_x)
+            const radius = 150;
+            console.log(data);
+            
+            // Initialize svg using wider scope variable without const
+            svg = d3.create("svg")
+            .attr("viewBox", [-150, -150, 300, 300]);
+
+            const c1 = svg.append("circle")
+            .style("fill", "gray")
+            .style("stroke", "black")
+            .style("stroke-width", 0.025)
+            .attr("r", radius + 0.2)
+            .attr("cx", 0.5)
+            .attr("cy", 0.5);
+
+            const c2 = svg.append("circle")
+            .style("fill", "gray")
+            .style("stroke", "black")
+            .style("stroke-width", 0.025)
+            .attr("r", radius)
+            .attr("cx", 0.5)
+            .attr("cy", 0.5);
+
+            g = svg.append("g").selectAll("rect")
+            .data(data)
+            .join("rect")
+            .attr("x", ({x}) => x)
+            .attr("y", ({y}) => y)
+            .attr("width", rect_width )
+            .attr("height",rect_height )
+            .attr("fill", ({color}) => color)
+            .attr("stroke", "white")
+            .attr("stroke-width", 0.025)
+
+            svg.selectAll("rect")
+                .data(data)
+                .append("svg:title")
+                .text(({mouseover}) => mouseover);
+
+            // Initialize zoom using wider scope variable
+            zoom = d3.zoom()
+                .extent([[-100, -100], [500, 500]])
+                .scaleExtent([-1, 8])
+                .on("zoom", function (event) {
+                    g.attr("transform", event.transform);
+                    c1.attr("transform", event.transform);
+                    c2.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+
+            svg.on("mousedown", function() {
+                // Prevent drag
+                d3.event.preventDefault();
+            });
+
+            document.getElementById(containerId).appendChild(svg.node());
+            // svgContainer.appendChild(svg.node());
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('dataForm_wafermap');
+        
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();  // Prevent traditional form submission
+                var formData = {
+                    root_lot_id: $('#dataForm_wafermap #root_lot_id').val(),
+                    step_id: $('#dataForm_wafermap #stepId').val(),
+                    startDate: $('#dataForm_wafermap #startDate').val(),
+                    startDate: $('#dataForm_wafermap #endDate').val(),
+                };
+                console.log(formData.root_lot_id);
+                console.log(formData.step_id);
+                console.log(formData.start_date);
+                console.log(formData.end_date);
+
+                fetch('/UpdateWaferMap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    updateWafermaps(data.waferData);  // Assuming 'waferData' is part of the JSON response
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        
+            function updateWafermaps(data) {
+                for (let i = 1; i <= 25; i++) {
+                    const waferMapId = `{{root_lot_id}}-${i}`;
+                    if (data.hasOwnProperty(waferMapId)) {
+                        drawWaferMap(data[waferMapId], data.width, data.height, waferMapId);
+                    } else {
+                        console.log(`No data available for ${waferMapId}`);
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
