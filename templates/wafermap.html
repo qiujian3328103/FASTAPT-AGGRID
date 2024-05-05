@@ -5,6 +5,22 @@
 
 {% block head %}
 {{ super() }}
+<style>
+
+    .aspect-ratio-box {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    }
+    
+    .aspect-ratio-box .content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }
+</style>
 {% endblock %}
 
 
@@ -56,13 +72,13 @@
             <div class="col-md-10">
                 <div class="row">
                     {% for i in range(1, 26) %}
-                        <div class="col-md-2 mb-2 p-1">
+                        <div class="col-md-3 mb-2 p-1">
                             <div class="card">
                                 <div class="card-header" style="height: 25px; padding: 1px 12px;  font-size: 12px;">
                                     {{ root_lot_id }}-W{{ '%02d' | format(i) }}
                                 </div>
                                 <div class="card-body">
-                                    <div id="{{root_lot_id}}-{{ i }}" style="width: 100%; height: 200px;"></div>
+                                    <div id="{{root_lot_id}}-{{ i }}"></div>
                                 </div>
                                 <div class="card-footer">
                                     <button type="button" class="btn btn-primary">Click</button>
@@ -102,70 +118,6 @@
         const rect_width = {{ rectWidth|safe }};
         const rect_height = {{ rectHeight|safe }}; -->
 
-        function drawWaferMap(data, containerId) {
-            const svgContainer = document.getElementById(containerId);
-            // console.log(containerId);
-            if (!svgContainer) {
-                console.error("Container not found:", containerId);
-                return;
-            }
-            // console.log(max_x)
-            const radius = 150;
-            console.log(`max_x: ${max_x}, max_y: ${max_y}, min_x: ${min_x}, min_y: ${min_y}`);
-            const svg = d3.create("svg")
-                .attr("viewBox", [-150, -150,300, 300]);
-
-                const c1 = svg.append("circle")
-                .style("fill", "gray")
-                .style("stroke", "black")
-                .style("stroke-width", 0.025)
-                .attr("r", radius + 0.2)
-                .attr("cx", 0.5)
-                .attr("cy", 0.5);
-
-                const c2 = svg.append("circle")
-                .style("fill", "gray")
-                .style("stroke", "black")
-                .style("stroke-width", 0.025)
-                .attr("r", radius)
-                .attr("cx", 0.5)
-                .attr("cy", 0.5);
-
-                const g = svg.append("g").selectAll("rect")
-                .data(data)
-                .join("rect")
-                .attr("x", ({x}) => x)
-                .attr("y", ({y}) => y)
-                .attr("width", rect_width )
-                .attr("height",rect_height)
-                .attr("fill", ({color}) => color)
-                .attr("stroke", "white")
-                .attr("stroke-width", 0.025)
-
-                svg.selectAll("rect")
-                    .data(data)
-                    .append("svg:title")
-                    .text(({mouseover}) => mouseover);
-
-                svg.call(d3.zoom()
-                    .extent([[0, 0], [200, 200]])
-                    .scaleExtent([1, 8])
-                    .on("zoom", zoomed));
-
-                function zoomed({ transform }) {
-                    g.attr("transform", transform);
-                    c1.attr("transform", transform);
-                    c2.attr("transform", transform);
-                }
-                svg.on("mousedown", function() {
-                    // Prevent drag
-                    d3.event.preventDefault();
-                });
-
-            document.getElementById(containerId).appendChild(svg.node());
-            // svgContainer.appendChild(svg.node());
-        }
-
     </script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
@@ -181,13 +133,20 @@
                 console.error("Container not found:", containerId);
                 return;
             }
+
+            // Remove any existing SVG to prevent duplicates
+            while (svgContainer.firstChild) {
+                svgContainer.removeChild(svgContainer.firstChild);
+            }
+
             // console.log(max_x)
             const radius = 150;
-            console.log(data);
             
             // Initialize svg using wider scope variable without const
-            svg = d3.create("svg")
-            .attr("viewBox", [-150, -150, 300, 300]);
+            const svg = d3.create("svg")
+            .attr("viewBox", [-150, -150, 300, 300])
+            .style("width", "100%")
+            .style("height", "100%");
 
             const c1 = svg.append("circle")
             .style("fill", "gray")
@@ -205,7 +164,7 @@
             .attr("cx", 0.5)
             .attr("cy", 0.5);
 
-            g = svg.append("g").selectAll("rect")
+            const g = svg.append("g").selectAll("rect")
             .data(data)
             .join("rect")
             .attr("x", ({x}) => x)
@@ -221,19 +180,29 @@
                 .append("svg:title")
                 .text(({mouseover}) => mouseover);
 
-            // Initialize zoom using wider scope variable
-            zoom = d3.zoom()
-                .extent([[-100, -100], [500, 500]])
-                .scaleExtent([-1, 8])
-                .on("zoom", function (event) {
-                    g.attr("transform", event.transform);
-                    c1.attr("transform", event.transform);
-                    c2.attr("transform", event.transform);
+            // Define the zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([1, 8])  // Limits for zooming
+                .on("zoom", function(event) {
+                    // Apply scale only, remove any translation
+                    svg.selectAll("circle, g")
+                    .attr("transform", `scale(${event.transform.k})`);
                 });
 
             svg.call(zoom);
 
+            /*
+            svg.call(d3.zoom()
+                .extent([[0, 0], [200, 200]])
+                .scaleExtent([1, 8])
+                .on("zoom", zoomed));
 
+            function zoomed({ transform }) {
+                g.attr("transform", transform);
+                c1.attr("transform", transform);
+                c2.attr("transform", transform);
+            }
+            */
             svg.on("mousedown", function() {
                 // Prevent drag
                 d3.event.preventDefault();
@@ -242,6 +211,9 @@
             document.getElementById(containerId).appendChild(svg.node());
             // svgContainer.appendChild(svg.node());
         }
+
+
+
 
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById('dataForm_wafermap');
@@ -269,16 +241,16 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
-                    updateWafermaps(data.waferData);  // Assuming 'waferData' is part of the JSON response
+                    updateWafermaps(data.waferData, data.width, data.height);  // Assuming 'waferData' is part of the JSON response
                 })
                 .catch(error => console.error('Error:', error));
             });
         
-            function updateWafermaps(data) {
+            function updateWafermaps(data, width, height) {
                 for (let i = 1; i <= 25; i++) {
                     const waferMapId = `{{root_lot_id}}-${i}`;
                     if (data.hasOwnProperty(waferMapId)) {
-                        drawWaferMap(data[waferMapId], data.width, data.height, waferMapId);
+                        drawWaferMap(data[waferMapId], width, height, waferMapId);
                     } else {
                         console.log(`No data available for ${waferMapId}`);
                     }
