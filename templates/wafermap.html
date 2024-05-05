@@ -20,7 +20,30 @@
         bottom: 0;
         right: 0;
     }
+
+    .node-color-box {
+        width: 12px;
+        height: 12px;
+        display: inline-block;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    .card-body {
+        overflow-x: auto;  /* Enables horizontal scrolling*/
+        white-space: nowrap;  /* Prevents text from wrapping onto the next line*/
+    }
+    
+    .jstree-node {
+        display: inline-block;  /* Ensures that nodes are treated as inline elements*/
+        vertical-align: top;
+    }
+
+    .jstree-anchor {
+        white-space: nowrap;  /* Prevents individual tree node labels from wrapping*/
+    }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 {% endblock %}
 
 
@@ -88,7 +111,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2" id="tree-view">
                 <div class="card">
                     <div class="card-body">
                         test
@@ -104,6 +127,8 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.select2').select2({
@@ -113,10 +138,10 @@
         });
     </script>
     <script>
-        <!-- const rawData = {{ waferData|safe }};
+        /* const rawData = {{ waferData|safe }};
         // console.log("Raw Data:", rawData);
         const rect_width = {{ rectWidth|safe }};
-        const rect_height = {{ rectHeight|safe }}; -->
+        const rect_height = {{ rectHeight|safe }}; */
 
     </script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -212,6 +237,26 @@
             // svgContainer.appendChild(svg.node());
         }
 
+        function prepareJsTreeData(binListTree) {
+            let treeData = [];
+            for (let category in binListTree) {
+                let children = [];
+                let categoryColor = binListTree[category].color;
+                for (let bin in binListTree[category].BIN) {
+                    children.push({
+                        "text": `<span class='node-color-box' style='background-color:${categoryColor};'>&nbsp;&nbsp;&nbsp;</span> ${bin} (${binListTree[category].BIN[bin]})`,
+                        "icon": false
+                    });
+                }
+                treeData.push({
+                    "text": `<span class='node-color-box' style='background-color:${categoryColor};'>&nbsp;&nbsp;&nbsp;</span> ${category}`,
+                    "children": children,
+                    "icon": true,
+                    "state": {"opened": true}
+                });
+            }
+            return treeData;
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById('dataForm_wafermap');
@@ -224,10 +269,6 @@
                     startDate: $('#dataForm_wafermap #startDate').val(),
                     startDate: $('#dataForm_wafermap #endDate').val(),
                 };
-                console.log(formData.root_lot_id);
-                console.log(formData.step_id);
-                console.log(formData.start_date);
-                console.log(formData.end_date);
 
                 fetch('/UpdateWaferMap', {
                     method: 'POST',
@@ -241,6 +282,7 @@
                     console.log(data);
                     updateWafermaps(data.waferData, data.width, data.height);  // Assuming 'waferData' is part of the JSON response
                     updateCardHeaders("new_lot");
+                    updateBinTreeList(data.bin_list_tree);
                 })
                 .catch(error => console.error('Error:', error));
             });
@@ -272,6 +314,50 @@
                 });
             }
             
+            function updateWaferColors(selectedLabels) {
+                d3.selectAll("rect").each(function(d) {
+                    if (selectedLabels.includes(d.bin_value)) {
+                        // Keep original color if bin_value is in the selected labels
+                        d3.select(this).style('fill', d.color);
+                    } else {
+                        // Change color to white if bin_value is not in the selected labels
+                        d3.select(this).style('fill', 'white');
+                    }
+                });
+            }
+
+            function updateBinTreeList(binTreeData){
+                const preparedData = prepareJsTreeData(binTreeData);
+                $('#tree-view .card-body').jstree({
+                    "core": {
+                        "data": preparedData,
+                        "check_callback": true,  // Allow all modifications
+                        "themes": {
+                            "name": "default",
+                            "responsive": true
+                        }
+                    },
+                    "checkbox": {
+                        "keep_selected_style": true,
+                        "three_state": true, // Parent selection does not depend on children selection
+                        "cascade": "undetermined" // Affects parent and siblings independently
+                    },
+                    "plugins": ["checkbox"],  // Enable checkboxes
+                    "types" : {
+                        "default" : {
+                            "icon" : false  // Disabling default icons
+                        }
+                    }
+                }).on('changed.jstree', function (e, data) {
+                    var selectedNodes = data.instance.get_selected(true);
+                    var selectedLabels = selectedNodes.map(node => {
+                        var match = node.text.match(/\b(BIN\d+)\b/);
+                        return match ? match[0] : null;  // Check if match is not null before accessing index
+                    }).filter(label => label !== null); // Filter out null entries
+                    console.log(selectedLabels);
+                    updateWaferColors(selectedLabels);
+                });
+            }
         });
     </script>
 {% endblock %}

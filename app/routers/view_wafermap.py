@@ -46,4 +46,28 @@ async def update_wafermap(request: Request,item: SubmitWaferMapRequest):
     # Assuming create_wafer_data function is implemented correctly and can handle the inputs
     wafer_data, shot_data, width, height = create_wafer_data(root_lot_id)
 
-    return {"waferData": wafer_data, "shotData": shot_data, "width": width, "height": height}
+    bin_list_tree = {
+        "ATPG":{
+            "color": "#FF5733",
+            "BIN":{
+                "BIN1001":"good",
+                "BIN1002":"Good2"
+            }
+        }, 
+        "MBIST":{
+            "color": "#337AFF",
+            "BIN":{
+                "BIN2001":"MBIST1",
+                "BIN2003":"MBIST2",
+            }
+        },
+        "IDDQ":{
+            "color": "#FF33A2",
+            "BIN":{
+                "BIN3001":"IDDQ1",
+                "BIN3003":"IDDQ2"
+            }
+        },
+    }
+    
+    return {"waferData": wafer_data, "shotData": shot_data, "width": width, "height": height, "bin_list_tree":bin_list_tree}
