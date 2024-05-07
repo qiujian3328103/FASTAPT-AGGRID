@@ -32,6 +32,10 @@ async def lot_review(request: Request, db:Session=Depends(get_db)):
     else:
         for index, record in enumerate(query_result):
             if record is not None:
+                # Parse the bin_lst and generate image paths
+                bin_numbers = record.layer.split(',')
+                image_paths = ','.join([f"static/images/map.jpg" for bin in bin_numbers])
+                
                 row_data.append({
                     "process_id": record.process_id,
                     "layer": record.layer,
@@ -43,7 +47,9 @@ async def lot_review(request: Request, db:Session=Depends(get_db)):
                     "desc": record.desc,
                     "user": record.user, 
                     "last_update": record.last_update.strftime("%Y-%m-%d"),
+                    "image":image_paths
                 })
+                
     return templates.TemplateResponse("listview.html", {"request": request, 
                                                            "rowData":json.dumps(row_data)})
     
@@ -53,11 +59,7 @@ async def edit_row(process_id: str, name: str, item: SWLYLabelListUpdate, db: Se
     if current_user.auth not in ["Admin"]:
         raise HTTPException(status_code=403, detail="User not authorized to edit")
     else:
-        db_item = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id == process_id, SWLY_LABEL_LIST.name == name).first()
-        print(item.name)
-        print(item.desc)
-        
-        
+        db_item = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id == process_id, SWLY_LABEL_LIST.name == name).first()        
         if db_item:
             # Here, update fields if they are provided in the request
             db_item.name = item.name if item.name else db_item.name

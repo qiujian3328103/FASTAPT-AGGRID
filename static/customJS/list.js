@@ -106,7 +106,16 @@ var columnDefs;
 
 // Define the render_image component
 var render_image = function(params) {
-    return `<img src="${params.value}" width="80" height="80">`;
+    if (params.value) {
+        // Split the string on commas to get an array of image URLs
+        var images = params.value.split(',');
+        // Map each URL to an img HTML string
+        var imgHtml = images.map(function(url) {
+            return `<img src="${url.trim()}" width="80" height="80" style="margin-right: 5px;">`;
+        }).join(''); // Join all image HTML strings to form a single string
+        return imgHtml;
+    }
+    return ''; // Return an empty string if no image URLs are available
 };
 
 // Custom comparator function for date fields
@@ -186,11 +195,13 @@ document.addEventListener('DOMContentLoaded', function() {
         {"headerName": "EQP", "field": "tool"},
         {"headerName": "Bins", "field": "bin_lst"},
         {"headerName": "Signature", "field": "signature"},
+        {"headerName": "Image", "field": "image", "cellRenderer": "render_image","hide": true, "width":300},
         {"headerName": "Type", "field": "type"},
         {"headerName": "SWLY_Name", "field": "name"},
         {"headerName": "Desc", "field": "desc"},
         {"headerName": "User", "field": "user"},
         {"headerName": "Last Update", "field": "last_update"},
+
 
     ];
     gridOptions = {
@@ -205,8 +216,32 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             menuTabs: ["filterMenuTab"],
         },
+        components: {
+            render_image: render_image
+        },
+        onGridReady: function(params) {
+            gridApi = params.api; // Store the API once it's ready
+            var gridColumnApi = params.columnApi;
+        
+            // Setup the checkbox handler here to ensure gridApi is ready
+            document.getElementById('showHiddenColumn').addEventListener('change', function () {
+                var isChecked = this.checked;
+                // Updated method usage
+                gridApi.setColumnsVisible(['image'], isChecked);
+
+                var newHeight = isChecked ? 200 : 50;
+                gridApi.forEachNode(function(node) {
+                    node.setRowHeight(newHeight);
+                });
+                gridApi.onRowHeightChanged(); 
+
+
+            });
+        }
     };
 
     var gridDiv = document.querySelector('#ag-grid-list');
     gridApi = agGrid.createGrid(gridDiv, gridOptions);
 });
+
+

@@ -251,12 +251,22 @@
                 treeData.push({
                     "text": `<span class='node-color-box' style='background-color:${categoryColor};'>&nbsp;&nbsp;&nbsp;</span> ${category}`,
                     "children": children,
-                    "icon": true,
+                    "icon": false,
                     "state": {"opened": true}
                 });
             }
-            return treeData;
+        
+            // Create the top-level root node
+            let rootNode = {
+                "text": "All Category",
+                "state": {"opened": true, "selected": false},  // You can choose to select it by default if needed
+                "children": treeData,
+                "icon": "fa fa-globe"  // Optionally set an icon for the root node
+            };
+        
+            return [rootNode];  // Wrap the root node in an array for jsTree
         }
+        
 
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById('dataForm_wafermap');
