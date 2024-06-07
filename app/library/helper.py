@@ -2,6 +2,10 @@ import os.path
 import markdown
 from fastapi.templating import Jinja2Templates
 import os
+from fastapi import Request
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.templating import Jinja2Templates
+import jwt
 
 def openfile(filename):
     filepath = os.path.join("app/pages/", filename)
@@ -32,3 +36,21 @@ class CustomJinja2Templates(Jinja2Templates):
         # Ensure the user is added to the context for every template
         context['user'] = os.getlogin()  # or any other method to fetch the user
         return super().TemplateResponse(name, context, **kwargs)
+
+# from fastapi import Request
+# from fastapi.templating import Jinja2Templates
+
+# class CustomJinja2Templates(Jinja2Templates):
+#     """
+#     Custom template rendering class that injects the current user's ID
+#     into every template context based on the HTTP request headers.
+#     """
+#     def TemplateResponse(self, name: str, request: Request, context: dict = None, **kwargs):
+#         if context is None:
+#             context = {}
+#         print(request)
+#         # Fetch user ID from the request headers
+#         user_id = request.headers.get("X-User-ID", "default_user_id")  # Default if not provided
+#         context['user'] = user_id  # Add user ID to the context
+
+#         return super().TemplateResponse(name, context=context, **kwargs)

@@ -111,7 +111,7 @@ var render_image = function(params) {
         var images = params.value.split(',');
         // Map each URL to an img HTML string
         var imgHtml = images.map(function(url) {
-            return `<img src="${url.trim()}" width="80" height="80" style="margin-right: 5px;">`;
+            return `<img src="${url.trim()}" width="80" height="40" style="margin-right: 5px;">`;
         }).join(''); // Join all image HTML strings to form a single string
         return imgHtml;
     }
@@ -135,7 +135,6 @@ function reloadData() {
         })
         .catch(error => console.error('Error loading the data:', error));
 }
-
 
 // send the data to fastapi to process 
 function submitEditForm() {
@@ -176,7 +175,6 @@ function submitEditForm() {
           console.error('Error:', error);
       });
 }
-
 
 document.addEventListener('DOMContentLoaded', function() {
     columnDefs = [
@@ -244,4 +242,24 @@ document.addEventListener('DOMContentLoaded', function() {
     gridApi = agGrid.createGrid(gridDiv, gridOptions);
 });
 
-
+// download the csv file from the server
+document.getElementById('downloadButton').addEventListener('click', function () {
+    fetch('/download_csv', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'swly_label_list.csv';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error('Error:', error));
+});

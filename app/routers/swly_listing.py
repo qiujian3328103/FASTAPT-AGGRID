@@ -14,6 +14,10 @@ from datetime import datetime
 from fastapi import HTTPException
 from app.routers.auth import User
 from app.routers.auth import get_current_username
+import csv
+from fastapi.responses import StreamingResponse
+import io 
+
 router = APIRouter()
 templates = CustomJinja2Templates(directory="templates")
 
@@ -56,7 +60,7 @@ async def lot_review(request: Request, db:Session=Depends(get_db)):
 @router.put("/edit_row/{process_id}/{name}")
 async def edit_row(process_id: str, name: str, item: SWLYLabelListUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_username)):
     print(current_user)
-    if current_user.auth not in ["Admin"]:
+    if current_user.auth in ["Admin"]:
         raise HTTPException(status_code=403, detail="User not authorized to edit")
     else:
         db_item = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id == process_id, SWLY_LABEL_LIST.name == name).first()        
@@ -88,5 +92,34 @@ async def lot_review(request: Request, db: Session = Depends(get_db)):
     query_result = db.query(SWLY_LABEL_LIST).filter(SWLY_LABEL_LIST.process_id == process_ids[0]).order_by(SWLY_LABEL_LIST.last_update.desc()).all()
 
     row_data = [record.to_dict() for record in query_result]  # Convert SQLAlchemy models to dictionaries
-    print(row_data)
+
     return row_data  # Ensure this returns a list of dicts directly
+
+
+@router.get("/download_csv")
+async def download_csv(db: Session = Depends(get_db)):
+    query_result = db.query(SWLY_LABEL_LIST).all()
+
+    def generate_csv():
+        output = io.StringIO()
+        writer = csv.writer(output)
+        # Write header
+        writer.writerow(['process_id', 'layer', 'tool', 'bin_lst', 'signature', 'type', 'name', 'desc', 'user', 'last_update'])
+        # Write data
+        for record in query_result:
+            writer.writerow([
+                record.process_id,
+                record.layer,
+                record.tool,
+                record.bin_lst,
+                record.signature,
+                record.type,
+                record.name,
+                record.desc,
+                record.user,
+                record.last_update.strftime("%Y-%m-%d")
+            ])
+        output.seek(0)
+        yield output.read()
+
+    return StreamingResponse(generate_csv(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=swly_label_list.csv"})

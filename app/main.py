@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap
+from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset
 from starlette.middleware.sessions import SessionMiddleware
 from typing import Tuple, List, Dict, Annotated, Union
 from fastapi_auth_middleware import AuthMiddleware
@@ -15,12 +15,7 @@ import pandas as pd
 import json 
 import os 
 
-SECRET_KEY = "your_jwt_secret_key"  # Ensure this matches how you generate/sign tokens
-
 app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
 
 # app.add_middleware(
 #     CORSMiddleware,
@@ -48,6 +43,7 @@ app.include_router(info.router)
 app.include_router(login.router)
 app.include_router(auth.admin_router)
 app.include_router(view_wafermap.router)
+app.include_router(reset.router)
 
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
@@ -64,7 +60,6 @@ async def show_page(request: Request, page_name: str):
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     user = os.getlogin()
-    print(user)
     # Read CSV data
     df = pd.read_csv("app/Book1.csv")  # Change the path to your CSV file
     
@@ -113,6 +108,13 @@ async def home(request: Request):
         "selected_sigma": sigmas[0]
     }
     
+    # return templates.TemplateResponse("page.html", 
+    #                                   {"request": request,
+    #                                    "initial_data": initial_data,
+    #                                    "columnDefs": json.dumps(column_defs), 
+    #                                    "rowData": json.dumps(row_data),
+    #                                    "user": user
+    #                                     })
     return templates.TemplateResponse("page.html", 
                                       {"request": request,
                                        "initial_data": initial_data,

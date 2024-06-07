@@ -32,7 +32,7 @@
         <link href="{{ url_for('static', path='/css/font-awesome.min.css') }}", rel="stylesheet">
         <!-- Font Awesome JS -->
         <script src="https://kit.fontawesome.com/543c4560e5.js" crossorigin="anonymous"></script>
-        
+        <link href="{{ url_for('static', path='/css/jquery-ui.css') }}", rel="stylesheet">
         <link href="{{ url_for('static', path='/css/select2.min.css') }}", rel="stylesheet">
         <link href="{{ url_for('static', path='/css/bootstrap-datepicker.min.css') }}", rel="stylesheet">
         <link href="{{ url_for('static', path='/css/toastr.min.css') }}", rel="stylesheet">
@@ -56,7 +56,7 @@
     <div id="content">
         {% block page_content %}
         {% endblock %}
-        {% include 'include/footer.html' %}
+        <!-- {% include 'include/footer.html' %} -->
     </div>
     
 
@@ -64,6 +64,7 @@
     <script src="{{ url_for('static', path='js/jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', path='js/popper.min.js') }}"></script>
     <script src="{{ url_for('static', path='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', path='js/jquery-ui.js') }}"></script>
     <script src="{{ url_for('static', path='js/jquery.mCustomScrollbar.concat.min.js') }}"></script>
     <script src="{{ url_for('static', path='js/select2.min.js') }}"></script>
     <script src="{{ url_for('static', path='js/toastr.min.js') }}"></script>

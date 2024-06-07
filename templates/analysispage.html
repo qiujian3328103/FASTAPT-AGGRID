@@ -9,11 +9,11 @@
 {% block page_content %}
     <main role="main" style="padding-top: 70px;">
         <div closs="row mb-3">
-            <form id="dataForm_search_lot" action="/form_search_lot" method="post">
+            <form id="dataForm_search_label" onsubmit="filterData(event)">
                 <div class="row mb-4">
                     <div class="col">
-                        <input type="text" class="form-control" id="inputRootLotId" placeholder="RootLotID">
-                      </div>
+                        <input type="text" class="form-control" id="inputLabel" placeholder="label">
+                    </div>
                     <div class="col">
                         <label for="submitButton"></label>
                         <button type="submit" class="btn btn-primary mt-md-4">Search</button>
@@ -56,10 +56,6 @@
                     },
                     stackLabels: {
                         enabled: true,
-                        style: {
-                            fontWeight: 'bold',
-                            color: 'gray'
-                        }
                     }
                 },
                 tooltip: {
@@ -137,7 +133,95 @@
 
         });
     </script>
-    <script>
 
+    <script>
+        async function filterData(event) {
+            event.preventDefault();
+            var label = $('#inputLabel').val();  // Use jQuery to get the value
+            console.log(label);
+    
+            const response = await fetch(`/filter_data/${label}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ label: label })  // Send the label as JSON
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                updateCharts(data.bar_data, data.line_data);
+            } else {
+                console.error('Failed to fetch data');
+            }
+        }
+    
+        function updateCharts(barData, lineData) {
+            Highcharts.chart('highchart-bar-chart', {
+                chart: { type: 'column' },
+                title: { text: 'Monthly Wafer Counts by SWLY Label' },
+                xAxis: { categories: Object.keys(barData), crosshair: true },
+                yAxis: {
+                    min: 0,
+                    title: { text: 'Wafer Counts' },
+                    stackLabels: {
+                        enabled: true,
+                        style: { fontWeight: 'bold', color: 'gray' }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: { enabled: true }
+                    }
+                },
+                series: Object.keys(barData[Object.keys(barData)[0]]).map(swly_label => ({
+                    name: swly_label,
+                    data: Object.keys(barData).map(month => barData[month][swly_label] || 0)
+                }))
+            });
+    
+            var processedData = {};
+            lineData.forEach(function(point) {
+                if (!processedData[point.swly_label]) {
+                    processedData[point.swly_label] = [];
+                }
+                processedData[point.swly_label].push([point.month, point.swly_percent]);
+            });
+    
+            var seriesData = Object.keys(processedData).map(function(key) {
+                return {
+                    name: key,
+                    data: processedData[key].map(function(item) { return item[1]; })
+                };
+            });
+    
+            Highcharts.chart('highchart-line-chart', {
+                chart: { type: 'line' },
+                title: { text: 'Average SWLY Percent by Month' },
+                xAxis: {
+                    categories: lineData.map(function(item) { return item.month; }).filter(function(value, index, self) {
+                        return self.indexOf(value) === index;
+                    }),
+                    title: { text: 'Month' },
+                    crosshair: true
+                },
+                yAxis: { title: { text: 'Average SWLY Percent' } },
+                tooltip: {
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: {point.y:.2f}'
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: { enabled: true }
+                    }
+                },
+                series: seriesData
+            });
+        }
     </script>
 {% endblock %}

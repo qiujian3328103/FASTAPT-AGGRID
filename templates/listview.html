@@ -4,7 +4,12 @@
 
 {% block head %}
 {{ super() }}
-
+<style>
+  .small-button {
+    font-size: 12px;  /* Adjust the font size as needed */
+    padding: 5px 10px; /* Optional: Adjust the padding as well */
+  }
+</style>
 {% endblock %}
 
 {% block page_content %}
@@ -24,14 +29,17 @@
     </div>
 
     <hr />
-    <div class="row">
+    <div class="row mb-2">
       <div class="col">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="showHiddenColumn">
-            <label class="form-check-label" for="flexCheckDefault">
-              Show/Hide Map Image
-            </label>
-        </div>
+          <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="showHiddenColumn">
+              <label class="form-check-label" for="flexCheckDefault">
+                Show/Hide Map Image
+              </label>
+          </div>
+      </div>
+      <div class="col d-flex justify-content-end"> <!-- Align the button to the right -->
+        <button type="button" class="btn btn-info small-button" id="downloadButton">Download CSV</button>
       </div>
     </div>
     <div class="row">

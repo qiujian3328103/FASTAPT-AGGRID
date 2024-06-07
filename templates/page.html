@@ -72,16 +72,19 @@
                     <div class="col-md-2">
                         <label for="startDate">Start Date</label>
                         <div class="input-group date" id="startDatepicker">
-                            <input type="text" class="form-control" id="startDate" name="startDate"/>
+                            <input type="text" class="form-control" id="startDate" name="startDate">
                             <span class="input-group-text bg-light d-block">
-                                <i class="fa fa-calendar" id="startCalendarIcon"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-minus" viewBox="0 0 16 16">
+                                    <path d="M5.5 9.5A.5.5 0 0 1 6 9h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"/>
+                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                                </svg>
                             </span>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <label for="endDate">End Date</label>
                         <div class="input-group date" id="endDatepicker">
-                            <input type="text" class="form-control" id="endDate" name="endDate"/>
+                            <input type="text" class="form-control" id="endDate" name="endDate">
                             <span class="input-group-text bg-light d-block">
                                 <i class="fa fa-calendar" id="endCalendarIcon"></i>
                             </span>
@@ -93,12 +96,30 @@
                     </div>
                 </div>
             </form>
-
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <p>Click on the column headers to sort the data.</p>
+                </div>
+            </div>
             <div id="ag-grid" class="ag-theme-alpine" style="height: 800px; width: 100%;"></div>
         </div>
     </div>
 </main><!-- /.container -->
+<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+    <div class="col-md-4 d-flex align-items-center">
+      <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+        <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+      </a>
+      <span class="text-muted">© 2021 Company, Inc</span>
+    </div>
 
+    <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+      <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
+      <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
+      <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"></use></svg></a></li>
+    </ul>
+</footer>
 {% endblock %}
 
 

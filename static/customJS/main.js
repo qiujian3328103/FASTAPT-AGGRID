@@ -109,3 +109,17 @@ $(document).ready(function() {
     });
     
 });
+
+
+$(function(){
+    $("#startDate").datepicker({
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '2010:2025'
+    });
+    // Show the datepicker when the calendar icon is clicked
+    $("#startDatepicker .input-group-text").on('click', function() {
+        $("#startDate").datepicker("show");
+    });
+});

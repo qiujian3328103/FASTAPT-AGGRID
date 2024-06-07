@@ -337,6 +337,12 @@
             }
 
             function updateBinTreeList(binTreeData){
+                const treeContainer = $('#tree-view .card-body');
+
+                // Check if the jsTree has already been initialized and destroy it if it has
+                if (treeContainer.data('jstree')) {
+                    treeContainer.jstree('destroy'); // This will completely remove the jsTree instance
+                }
                 const preparedData = prepareJsTreeData(binTreeData);
                 $('#tree-view .card-body').jstree({
                     "core": {
