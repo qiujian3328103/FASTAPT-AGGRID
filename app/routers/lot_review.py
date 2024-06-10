@@ -5,7 +5,7 @@ import os
 import pandas as pd 
 from app.library.helper import openfile
 from app.library.helper import CustomJinja2Templates
-
+from config import TEST_DATA_SET_URL
 router = APIRouter()
 templates = CustomJinja2Templates(directory="templates")
 
@@ -13,7 +13,7 @@ templates = CustomJinja2Templates(directory="templates")
 @router.get("/lot_review", response_class=HTMLResponse)
 async def lot_review(request: Request, lot_id: str = Query(...), wafer_id: str = Query(...)):
     print(lot_id, wafer_id)
-    df = pd.read_csv("app/Book1.csv")  # Change the path to your CSV file
+    df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
     
     filtered_df = df[df["lot_id"]==lot_id]
     
@@ -32,7 +32,7 @@ async def lot_review(request: Request, lot_id: str = Query(...), wafer_id: str =
 @router.get("/form_lotreview_submit", response_class=HTMLResponse)
 async def update_lot_review(request: Request, lot_id: str = Query(...)):
     print(lot_id)
-    df = pd.read_csv("app/Book1.csv")  # Change the path to your CSV file
+    df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
     
     filtered_df = df[df["lot_id"]==lot_id]
     

@@ -13,10 +13,24 @@ var dateComparator = function(filterLocalDateAtMidnight, cellValue) {
     return cellDate - filterLocalDateAtMidnight;
 };
 
+// Define cellClassRules for the SWLY Label column
+const swlyLabelCellClassRules = {
+    "rag-red": (params) => params.value === "M3-J3 Short",
+    "rag-green": (params) => params.value !== "M3-J3 Short",
+};
+
 
 document.addEventListener('DOMContentLoaded', function() {
     gridOptions = {
-        columnDefs: columnDefs,
+        columnDefs: columnDefs.map(col => {
+            if (col.field === "swly_label") {
+                return {
+                    ...col,
+                    cellClassRules: swlyLabelCellClassRules,
+                };
+            }
+            return col;
+        }),
         rowData: rowData,
         defaultColDef: {
             flex: 1,

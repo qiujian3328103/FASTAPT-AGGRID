@@ -123,3 +123,33 @@ async def download_csv(db: Session = Depends(get_db)):
         yield output.read()
 
     return StreamingResponse(generate_csv(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=swly_label_list.csv"})
+
+# @router.get("/download_csv")
+# async def download_csv(db: Session = Depends(get_db)):
+#     query_result = db.query(SWLY_LABEL_LIST).all()
+
+#     def generate_csv():
+#         output = io.StringIO()
+#         writer = csv.writer(output)
+#         # Write header
+#         writer.writerow(['process_id', 'layer', 'tool', 'bin_lst', 'signature', 'type', 'name', 'desc', 'user', 'last_update'])
+#         # Write data
+#         for record in query_result:
+#             layers = record.layer.split(',') if record.layer else ['']
+#             for layer in layers:
+#                 writer.writerow([
+#                     record.process_id,
+#                     layer,
+#                     record.tool,
+#                     record.bin_lst,
+#                     record.signature,
+#                     record.type,
+#                     record.name,
+#                     record.desc,
+#                     record.user,
+#                     record.last_update.strftime("%m/%d/%y")
+#                 ])
+#         output.seek(0)
+#         yield output.read()
+
+#     return StreamingResponse(generate_csv(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=swly_label_list.csv"})

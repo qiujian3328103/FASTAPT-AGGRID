@@ -1,8 +1,8 @@
 import pandas as pd 
 import numpy as np 
-
+from config import TEST_WAFER_MAP_SAMPLE_DATA
 def create_wafer_data(root_lot_id):
-    df_raw = pd.read_csv(r"/Users/JianQiu/Dropbox/pythonprojects/django_web1/sample.csv", index_col=False)
+    df_raw = pd.read_csv(TEST_WAFER_MAP_SAMPLE_DATA, index_col=False)
     
     # Filter out rows based on "sort_test_flag"
     df = df_raw[df_raw["sort_test_flag"] == "T"]

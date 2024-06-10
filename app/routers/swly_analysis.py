@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.library.database import get_db
 from app.library.models import SWLY_LABEL_LIST
 from datetime import datetime 
+from config import TEST_LABEL_DATA
 
 router = APIRouter()
 templates = CustomJinja2Templates(directory="templates")
@@ -18,7 +19,7 @@ templates = CustomJinja2Templates(directory="templates")
 
 @router.get("/swly_analysis", response_class=HTMLResponse)
 async def lot_review(request: Request):
-    df = pd.read_csv("app/plot_test_data.csv", index_col=False)
+    df = pd.read_csv(TEST_LABEL_DATA, index_col=False)
     df["edit_date"] = pd.to_datetime(df["edit_date"])
     df['month'] = df['edit_date'].dt.strftime('%Y-%m')  # Use month-year format
 
@@ -38,7 +39,7 @@ async def lot_review(request: Request):
 @router.post("/filter_data/{label}", response_class=JSONResponse)
 async def filter_data(request: Request, label: Optional[str] = None, db: Session = Depends(get_db)):
     print(label)
-    df = pd.read_csv("app/plot_test_data.csv", index_col=False)
+    df = pd.read_csv(TEST_LABEL_DATA, index_col=False)
     df["edit_date"] = pd.to_datetime(df["edit_date"])
     df['month'] = df['edit_date'].dt.strftime('%Y-%m')  # Use month-year format
 

@@ -5,7 +5,7 @@ import os
 from fastapi import Request
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.templating import Jinja2Templates
-import jwt
+# import jwt
 
 def openfile(filename):
     filepath = os.path.join("app/pages/", filename)

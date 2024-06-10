@@ -9,7 +9,7 @@ from typing import List
 from app.library.database import get_db
 from app.library.models import SWLY_LABEL_DATA
 from app.library.helper import CustomJinja2Templates
-
+from config import TEST_WAFER_MAP_SAMPLE_DATA, TEST_BIN_DATA
 
 router = APIRouter()
 templates = CustomJinja2Templates(directory="templates/")
@@ -42,7 +42,7 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
     # script, div = components(p)
     # return templates.TemplateResponse("waferlabel.html", {"request": request, "lot_id": lot_id, "wafer_id": wafer_id, "plot_script": script, "plot_div": div})
     # df_raw = pd.read_csv(r"C:\Users\Jian Qiu\Dropbox\pythonprojects\django_web1\sample.csv", index_col=False)
-    df_raw = pd.read_csv(r"/Users/JianQiu/Dropbox/pythonprojects/django_web1/sample.csv", index_col=False)
+    df_raw = pd.read_csv(TEST_WAFER_MAP_SAMPLE_DATA, index_col=False)
     
     # Filter out rows based on "sort_test_flag"
     df = df_raw[df_raw["sort_test_flag"] == "T"]
@@ -96,7 +96,7 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
     swly_bins = ["BIN1001", "BIN1002", "BIN1003", "BIN1004", "BIN1019", "BIN1018", "BIN1017", "BIN1016"]
     
     # read the bindata.csv and render the data to html page 
-    df_bins = pd.read_csv(r"/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/tests/bindata.csv", index_col=False)
+    df_bins = pd.read_csv(TEST_BIN_DATA, index_col=False)
     df_bins["WAFER_ID"] = df_bins["WAFER_ID"].astype(str).str.zfill(2)
     print(df_bins)
     summary = df_bins.groupby('BIN_ITEM')['BIN_VALUE'].sum().reset_index()

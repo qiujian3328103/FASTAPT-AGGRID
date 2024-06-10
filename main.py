@@ -7,15 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
 from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset
-from starlette.middleware.sessions import SessionMiddleware
+# from starlette.middleware.sessions import SessionMiddleware
 from typing import Tuple, List, Dict, Annotated, Union
-from fastapi_auth_middleware import AuthMiddleware
+# from fastapi_auth_middleware import AuthMiddleware
 from fastapi.security import OAuth2PasswordBearer
 import pandas as pd 
 import json 
 import os 
-from config import TEST_DATA_SET_URL
-
+from config import TEST_DATA_SET_URL, TEST_IMAGE_URL
 app = FastAPI()
 
 # app.add_middleware(
@@ -86,7 +85,7 @@ async def home(request: Request):
     for i in range(1, 26):
         col_name = f"W{i:02d}"  # Format the column name (e.g., "W01", "W02", ..., "W25")
         # df[col_name] = 'https://www.kasandbox.org/programming-images/avatars/leaf-blue.png'
-        df[col_name] = 'static/images/map.jpg'
+        df[col_name] = TEST_IMAGE_URL
 
     row_data = df.to_dict(orient="records")
     
@@ -150,7 +149,7 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     
     for i in range(1, 26):
         col_name = f"W{i:02d}"  # Format the column name (e.g., "W01", "W02", ..., "W25")
-        filtered_df[col_name] = 'static/images/map.jpg'
+        filtered_df[col_name] = TEST_IMAGE_URL
     
     row_data = filtered_df.to_dict(orient="records")
     
@@ -165,16 +164,3 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
         
     # Convert filtered data into JSON structure expected by ag-grid on the frontend
     return JSONResponse(content={"rowData": row_data})
-        
-    # # Provide initial data for dropdowns
-    # initial_data = {
-    #     "process_ids": df['lot_id'].unique().tolist(),
-    #     "step_ids": ["U_SYSREAL_F", "EDS", "FT"],
-    #     "sigmas": ["3Sigma", "4Sigma"],
-    #     "selected_process_ids": processIds,
-    #     "selected_step_id": stepId,
-    #     "selected_sigma": sigma
-    # }
-    
-    # # Render the page again with updated data
-    # return templates.TemplateResponse("page.html", {'request': request, "columnDefs": json.dumps(column_defs), "rowData": json.dumps(row_data), "initial_data": initial_data})
