@@ -99,3 +99,20 @@ class SWLY_LABEL_LIST(Base):
             "last_update": self.last_update.strftime("%Y-%m-%d %H:%M:%S") if self.last_update else None
         }
     
+class SWLY_COLOR_LIST(Base):
+    __tablename__ = "BIN_COLOR_TABLE"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    process_id = Column(String)
+    bin = Column(String)
+    bin_group = Column(String)
+    color = Column(String)
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "process_id": self.process_id,
+            "bin": self.bin,
+            "bin_group": self.bin_group,
+            "color": self.color,
+        }
+    

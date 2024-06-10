@@ -10,3 +10,5 @@ from app.library.helper import CustomJinja2Templates
 import jwt
 import os 
 
+class ColorSearchForm(BaseModel):
+    process_id: str 

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_page = "swly_anlaysis" %}
+{% block title %}SWLY Label{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    <main role="main" style="padding-top: 70px;">
+        <div closs="row mb-3">
+            <div class = "col">
+                <form id = "dataForm_search_color">
+                    <div class="row mb-2">
+                        <div class="col-md-3">
+                            <label for="inputSettingColor">Process ID</label>
+                            <select id="inputSettingColor" class="form-control select2" name="inputSettingColor">
+                                {% for process_id in initial_data.process_ids %}
+                                    {% if process_id in initial_data.selected_process_ids %}
+                                        <option value="{{ process_id }}" selected>{{ process_id }}</option>
+                                    {%  else %}
+                                    <option value="{{ process_id }}">{{ process_id }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="submitButton"></label>
+                            <button type="submit" class="btn btn-info mt-md-4">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <hr/>
+        <div id="ag-grid-color" class="ag-theme-alpine" style="height: 800px; width: 100%;"></div>
+    </main>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+    var rowData = {{ row_data | safe }};
+</script>
+
+<script src="{{ url_for('static', path='customJS/setting.js') }}"></script>
+{% endblock %}

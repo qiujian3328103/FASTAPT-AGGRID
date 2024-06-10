@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset
+from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset, page_setting
 # from starlette.middleware.sessions import SessionMiddleware
 from typing import Tuple, List, Dict, Annotated, Union
 # from fastapi_auth_middleware import AuthMiddleware
@@ -44,7 +44,7 @@ app.include_router(login.router)
 app.include_router(auth.admin_router)
 app.include_router(view_wafermap.router)
 app.include_router(reset.router)
-
+app.include_router(page_setting.router)
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
 #     data = openfile("home.md")

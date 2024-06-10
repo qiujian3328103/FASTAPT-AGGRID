@@ -59,7 +59,6 @@ async def lot_review(request: Request, db:Session=Depends(get_db)):
     
 @router.put("/edit_row/{process_id}/{name}")
 async def edit_row(process_id: str, name: str, item: SWLYLabelListUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_username)):
-    print(current_user)
     if current_user.auth in ["Admin"]:
         raise HTTPException(status_code=403, detail="User not authorized to edit")
     else:

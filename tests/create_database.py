@@ -64,10 +64,38 @@ def save_csv_to_db(db_path, csv_path, table_name):
 
     conn.close()
 
+def create_color_bin_table(db_path, csv_path, table_name):
+    # Read CSV data
+    df = pd.read_csv(csv_path)
+    df["id"] = df["id"].astype(int)
+    # Connect to SQLite database
+    conn = sqlite3.connect(db_path)
+
+    # Drop the existing table if it exists
+    conn.execute(f"DROP TABLE IF EXISTS {table_name};")
+
+    # Create a new table with a primary key
+    conn.execute(f"""
+        CREATE TABLE {table_name} (
+            id INTEGER PRIMARY KEY,
+            process_id TEXT,
+            bin TEXT,
+            bin_group TEXT,
+            color TEXT
+        );
+    """)
+
+    # Insert data from DataFrame into the new table
+    df.to_sql(table_name, conn, if_exists='replace', index=False)
+
+    conn.close()
+
 if __name__ == "__main__":
-    csv_path = "/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/tests/test_signature.csv"
-    db_path = "/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/test.db"
-    account_csv_path = "/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/tests/test_account.csv"
+    # csv_path = "/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/tests/test_signature.csv"
+    # db_path = "/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/test.db"
+    # account_csv_path = "/Users/JianQiu/Dropbox/pythonprojects/fastapi-aggrid/tests/test_account.csv"
     # save_csv_to_db(db_path=db_path, csv_path=csv_path, table_name="swly_name_table")
-    create_user_accounts(db_path=db_path, csv_path=account_csv_path, table_name="accounts")
-    
+    # create_user_accounts(db_path=db_path, csv_path=account_csv_path, table_name="accounts")
+    csv_path = r"C:\Users\Jian Qiu\Dropbox\pythonprojects\fastapi-aggrid\tests\sample_color.csv"
+    db_path = r"C:\Users\Jian Qiu\Dropbox\pythonprojects\fastapi-aggrid\test.db"
+    create_color_bin_table(db_path=db_path, csv_path=csv_path, table_name="BIN_COLOR_TABLE")
