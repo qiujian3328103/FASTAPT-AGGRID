@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, APIRouter, Query, Depends
+from fastapi import FastAPI, Request, Form, APIRouter, Query, Depends, WebSocket
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import os
@@ -7,9 +7,10 @@ from app.library.helper import openfile
 from sqlalchemy.orm import Session
 from typing import List
 from app.library.database import get_db
-from app.library.models import SWLY_LABEL_DATA
+from app.library.models import SWLY_LABEL_DATA, SWLY_LOW_YIELD_TABLE
 from app.library.helper import CustomJinja2Templates
 from config import TEST_WAFER_MAP_SAMPLE_DATA, TEST_BIN_DATA
+from app.library.websocket_manager import notify_clients  # Import the notify_clients function
 
 router = APIRouter()
 templates = CustomJinja2Templates(directory="templates/")
@@ -131,10 +132,10 @@ async def detail_page(request: Request, lot_id: str = Query(...), wafer_id: str 
 
 
 @router.post("/submit_swly_label_data", response_class=HTMLResponse)
-async def submit_swly_label_data(request: Request, wafers: List[str] = Form(...), swly_bins: List[str] = Form(...), swly_labels: List[str] = Form(...), description: str = Form(...), db: Session = Depends(get_db)):
+async def submit_swly_label_data(request: Request, lot_id: str = Form(...), wafers: List[str] = Form(...), swly_bins: List[str] = Form(...), swly_labels: List[str] = Form(...), description: str = Form(...), db: Session = Depends(get_db)):
     user = "JQIU"
-    
-    print("pass")
+    last_flag = "Y"
+    print(lot_id)
     # form_data = await request.form()
     # print(form_data)  # Log to see what is received
     # Create a new SWLY_LABEL_DATA record
@@ -151,14 +152,10 @@ async def submit_swly_label_data(request: Request, wafers: List[str] = Form(...)
     db.commit()
     db.refresh(new_record)  # Refresh to get the ID of the new record
     
-    # Return a response 
-    
-    
-    
-    
-    # # Return a success message along with the ID of the new record
-    # return {
-    #     "message": "SWLY label data submitted successfully",
-    #     "id": new_record.id
-    # }
+    # update the query based on the lot id
+    db.query(SWLY_LOW_YIELD_TABLE).filter(SWLY_LOW_YIELD_TABLE.lot_id == lot_id).update({SWLY_LOW_YIELD_TABLE.swly_mark: last_flag}, synchronize_session=False)
+    db.commit()
+    # Notify clients of the update
+    await notify_clients("update")
+
     return JSONResponse(content={"message": "SWLY label data submitted successfully"})

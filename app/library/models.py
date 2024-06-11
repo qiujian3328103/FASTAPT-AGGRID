@@ -116,3 +116,24 @@ class SWLY_COLOR_LIST(Base):
             "color": self.color,
         }
     
+class SWLY_LOW_YIELD_TABLE(Base):
+    __tablename__ = "low_yield_table"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    lot_id = Column(String)
+    wafer_id = Column(String)
+    yld = Column(String)
+    fail_bin = Column(String)
+    swly_mark = Column(String)
+    swly_label = Column(String)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "lot_id": self.lot_id,
+            "wafer_id": self.wafer_id,
+            "yld": self.yld,
+            "fail_bin": self.fail_bin,
+            "swly_mark": self.swly_mark,
+            "swly_label": self.fail_bin,
+        }
+    

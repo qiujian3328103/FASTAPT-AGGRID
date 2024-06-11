@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Query, Form, Depends
+from fastapi import FastAPI, Request, Query, Form, Depends, WebSocket
 
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -7,10 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
 from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset, page_setting
+from app.library.models import SWLY_LOW_YIELD_TABLE
+from sqlalchemy.orm import Session 
+from app.library.database import get_db
+from app.library.websocket_manager import websocket_endpoint, notify_clients
+
 # from starlette.middleware.sessions import SessionMiddleware
-from typing import Tuple, List, Dict, Annotated, Union
 # from fastapi_auth_middleware import AuthMiddleware
-from fastapi.security import OAuth2PasswordBearer
 import pandas as pd 
 import json 
 import os 
@@ -49,6 +52,7 @@ app.include_router(page_setting.router)
 # async def home(request: Request):
 #     data = openfile("home.md")
 #     return templates.TemplateResponse("page.html", {"request": request, "data": data})
+app.websocket("/ws")(websocket_endpoint)
 
 
 @app.get("/page/{page_name}", response_class=HTMLResponse)
@@ -58,10 +62,14 @@ async def show_page(request: Request, page_name: str):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+async def home(request: Request, db: Session = Depends(get_db)):
     user = os.getlogin()
+    query_result = db.query(SWLY_LOW_YIELD_TABLE).all()
+    data = [item.to_dict() for item in query_result]
+    df = pd.DataFrame(data)
+
     # Read CSV data
-    df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
+    # df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
     
     # Provide initial data for dropdowns
     process_ids = df['lot_id'].unique().tolist()
@@ -74,8 +82,9 @@ async def home(request: Request):
     column_defs = [
         {"headerName": "Lot ID", "field": "lot_id", "filter": "agSetColumnFilter", "pinned": "left"},
         {"headerName": "Wafer ID", "field": "wafer_id", "filter": "agSetColumnFilter", "pinned": "left"},
-        {"headerName": "Yield", "field": "yield", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
+        {"headerName": "Yield", "field": "yld", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
         {"headerName": "Fail Bins", "field": "fail_bin", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left"},
+        {"headerName": "SWLY Marker", "field": "swly_mark", "filter": "agSetColumnFilter", "pinned": "left"},
         {"headerName": "SWLY Label", "field": "swly_label", "filter": "agSetColumnFilter", "pinned": "left"}
     ]
     
@@ -108,13 +117,6 @@ async def home(request: Request):
         "selected_sigma": sigmas[0]
     }
     
-    # return templates.TemplateResponse("page.html", 
-    #                                   {"request": request,
-    #                                    "initial_data": initial_data,
-    #                                    "columnDefs": json.dumps(column_defs), 
-    #                                    "rowData": json.dumps(row_data),
-    #                                    "user": user
-    #                                     })
     return templates.TemplateResponse("page.html", 
                                       {"request": request,
                                        "initial_data": initial_data,
@@ -127,10 +129,13 @@ async def home(request: Request):
 
 @app.post("/form_submit", response_class=HTMLResponse)
 async def update_data(request: Request, processIds: list = Form(...), stepId: str = Form(None), sigma: str = Form(None), 
-                      startDate: str = Form(None), endDate: str = Form(None)):
+                      startDate: str = Form(None), endDate: str = Form(None), db: Session = Depends(get_db)):
     print(processIds, stepId, sigma)
     # Read CSV data
-    df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
+    # df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
+    query_result = db.query(SWLY_LOW_YIELD_TABLE).all()
+    data = [item.to_dict() for item in query_result]
+    df = pd.DataFrame(data)
     
     # Filter DataFrame based on selected process IDs
     filtered_df = df[df['lot_id'].isin(processIds)]
@@ -141,8 +146,9 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     column_defs = [
         {"headerName": "Lot ID", "field": "lot_id", "filter": "agSetColumnFilter", "pinned": "left","width": 60},
         {"headerName": "Wafer ID", "field": "wafer_id", "filter": "agSetColumnFilter", "pinned": "left","width": 60},
-        {"headerName": "Yield", "field": "yield", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left","width": 60},
+        {"headerName": "Yield", "field": "yld", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left","width": 60},
         {"headerName": "Fail Bins", "field": "fail_bin", "filter": "agNumberColumnFilter", "filterParams": {"applyButton": True}, "pinned": "left","width": 60},
+        {"headerName": "SWLY Marker", "field": "swly_mark", "filter": "agSetColumnFilter", "pinned": "left"},
         {"headerName": "SWLY Label", "field": "swly_label", "filter": "agSetColumnFilter", "pinned": "left","width": 60}
     ]
     
@@ -161,6 +167,13 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
             "field": col_name,
             "cellRenderer": "render_image"
         })
-        
+    
+    # await notify_clients("update")
     # Convert filtered data into JSON structure expected by ag-grid on the frontend
     return JSONResponse(content={"rowData": row_data})
+
+
+@app.post("/notify_update")
+async def notify_update():
+    await notify_clients("update")
+    return {"message": "Clients notified"}

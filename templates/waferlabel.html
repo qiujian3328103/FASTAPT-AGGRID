@@ -239,10 +239,14 @@
                 <div class="card">
                     <div class="card-body">
                         <form id="submit_swly_form" method="POST" action="/submit_swly_label_data/">
-                            <div class="mb-3">
+                            <div class="row-mb-3">
                                 {{process_id}} - {{lot_id}}
                             </div>
-                            <div class="mb-3">
+                            <div class="row-mb-3">
+                                <label for="lot_id">lot id</label>
+                                <input type="text" required class="form-contorl" name="lot_id" value={{lot_id}}>
+                            </div>
+                            <div class="row-mb-3">
                                 <label for="wafer">Wafer ID:</label>
                                 <select id="wafer" class="form-control select2" name="wafers" multiple>
                                     {% for wafer_id in wafer_ids %}
@@ -254,7 +258,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div class="row-mb-3">
                                 <label for="swly_bin">Select SWLY BINS:</label>
                                 <select id="swly_bin" class="form-control select2" name="swly_bins" multiple>
                                     {% for swly_bin in swly_bins %}
@@ -262,7 +266,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div class="row-mb-3">
                                 <label for="swly_label">Select Labels:</label>
                                 <select id="swly_label" class="form-control select2" name="swly_labels" multiple>
                                     {% for swly_label in swly_labels %}
@@ -270,7 +274,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div class="row-mb-3">
                                 <label for="exampleFormControlTextarea1" class="form-label">Description</label>
                                 <textarea class="form-control" required name="description"
                                     id="exampleFormControlTextarea1" rows="3">{{description}}</textarea>
@@ -578,7 +582,6 @@
         });
     });
 </script>
-
 
 <script>
     var summaryziedByWaferID = {{ summaryzied_by_waferID | safe }};

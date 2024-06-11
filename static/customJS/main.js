@@ -62,6 +62,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var gridDiv = document.querySelector('#ag-grid');
     gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+    // WebSocket setup
+    const socket = new WebSocket("ws://localhost:8080/ws");
+    socket.onmessage = function(event) {
+        if (event.data === "update") {
+            fetch("/form_submit", {
+                method: "POST",
+                body: new FormData(document.getElementById("dataForm"))
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (gridApi) {
+                    gridApi.setGridOption('rowData', data);
+                }
+            });
+        }
+    };
 });
 
 $(document).ready(function() {
@@ -97,7 +114,6 @@ $(document).ready(function() {
     
         toastr.info('Processing...');
         var formData = new FormData(this);
-    
         $.ajax({
             url: '/form_submit',
             type: 'POST',
@@ -137,3 +153,4 @@ $(function(){
         $("#startDate").datepicker("show");
     });
 });
+
