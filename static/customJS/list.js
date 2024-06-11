@@ -243,23 +243,78 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // download the csv file from the server
+// document.getElementById('downloadButton').addEventListener('click', function () {
+//     fetch('/download_csv', {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         }
+//     })
+//     .then(response => response.blob())
+//     .then(blob => {
+//         const url = window.URL.createObjectURL(new Blob([blob]));
+//         const a = document.createElement('a');
+//         a.style.display = 'none';
+//         a.href = url;
+//         a.download = 'swly_label_list.csv';
+//         document.body.appendChild(a);
+//         a.click();
+//         window.URL.revokeObjectURL(url);
+//     })
+//     .catch(error => console.error('Error:', error));
+// });
+
 document.getElementById('downloadButton').addEventListener('click', function () {
-    fetch('/download_csv', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.blob())
-    .then(blob => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = 'swly_label_list.csv';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-    })
-    .catch(error => console.error('Error:', error));
+    console.log("test if passed");
+    $('#downloadModal').modal('show');
 });
+
+
+// document.getElementById('downloadTableData').addEventListener('click', function () {
+//     fetch('/download_csv', {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         }
+//     })
+//     .then(response => response.blob())
+//     .then(blob => {
+//         const url = window.URL.createObjectURL(new Blob([blob]));
+//         const a = document.createElement('a');
+//         a.style.display = 'none';
+//         a.href = url;
+//         a.download = 'swly_label_list.csv';
+//         document.body.appendChild(a);
+//         a.click();
+//         window.URL.revokeObjectURL(url);
+//     })
+//     .catch(error => console.error('Error:', error));
+// });
+
+
+// document.getElementById('downloadSplitWaferData').addEventListener('click', function () {
+//     fetch('/download_split_wafer_csv', {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         }
+//     })
+//     .then(response => response.blob())
+//     .then(blob => {
+//         const url = window.URL.createObjectURL(new Blob([blob]));
+//         const a = document.createElement('a');
+//         a.style.display = 'none';
+//         a.href = url;
+//         a.download = 'swly_label_list_split_wafer.csv';
+//         document.body.appendChild(a);
+//         a.click();
+//         window.URL.revokeObjectURL(url);
+//     })
+//     .catch(error => console.error('Error:', error));
+// });
+
+// // Implement the sendDataToEmail button functionality
+// document.getElementById('sendDataToEmail').addEventListener('click', function () {
+//     // Logic to send data to email
+//     alert('This feature is not implemented yet.');
+// });

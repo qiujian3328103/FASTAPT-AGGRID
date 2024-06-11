@@ -144,6 +144,29 @@
       </div>
   </div>
 </div>
+
+    <!-- Download Modal -->
+    <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="downloadModalLabel">Download Options</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="row mb-2">
+                    <button type="button" class="btn btn-primary" id="downloadTableData">Download Data as Table Show</button>
+                  </div>
+                  <div class="row mb-2">
+                    <button type="button" class="btn btn-secondary" id="downloadSplitWaferData">Download Split Wafer Data</button>
+                  </div>
+                  <div class="row mb-2">
+                    <button type="button" class="btn btn-info" id="sendDataToEmail">Send Data to Email</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
 </main>
 {% endblock %}
 

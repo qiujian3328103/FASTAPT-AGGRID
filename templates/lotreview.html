@@ -75,69 +75,68 @@
                 </div>
             
         </div>
-
     </main>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-<script>
-    document.getElementById('dataForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission behavior
-        const rootLotID = document.getElementById('inputRootLotId').value;
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+            const rootLotID = document.getElementById('inputRootLotId').value;
+            
+            // Assuming you're using GET to send data, adjust as necessary for POST
+            fetch(`/form_lotreview_submit?lot_id=${rootLotID}`, {
+                method: 'GET', // Or 'POST'
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateWaferMap(data.lot_wafer_urls);
+            })
+            .catch(error => console.error('Failed to fetch:', error));
+        });
+    
+        function updateWaferMap(lotWaferUrls) {
+            const container = document.querySelector('.container > .col-md-7.mb-2.p-1.no-lr-margin');
+            // Ensure that the row structure is maintained as per the original grid layout
+            for (let i = 0; i < 5; i++) {  // Assuming a 5x5 grid
+                let row = container.children[i] || document.createElement('div');
+                row.className = 'row mb-0';
+                for (let j = 0; j < 5; j++) {
+                    let imageIndex = i * 5 + j;
+                    let col = row.children[j] || document.createElement('div');
+                    col.className = 'col mb-1 p-1 d-flex justify-content-center';
+                    
+                    if (lotWaferUrls[imageIndex]) {
+                        let imgContainer = col.children[0] || document.createElement('div');
+                        imgContainer.className = 'img-container';
         
-        // Assuming you're using GET to send data, adjust as necessary for POST
-        fetch(`/form_lotreview_submit?lot_id=${rootLotID}`, {
-            method: 'GET', // Or 'POST'
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            updateWaferMap(data.lot_wafer_urls);
-        })
-        .catch(error => console.error('Failed to fetch:', error));
-    });
-    
-    function updateWaferMap(lotWaferUrls) {
-        const container = document.querySelector('.container > .col-md-7.mb-2.p-1.no-lr-margin');
-        // Ensure that the row structure is maintained as per the original grid layout
-        for (let i = 0; i < 5; i++) {  // Assuming a 5x5 grid
-            let row = container.children[i] || document.createElement('div');
-            row.className = 'row mb-0';
-            for (let j = 0; j < 5; j++) {
-                let imageIndex = i * 5 + j;
-                let col = row.children[j] || document.createElement('div');
-                col.className = 'col mb-1 p-1 d-flex justify-content-center';
-                
-                if (lotWaferUrls[imageIndex]) {
-                    let imgContainer = col.children[0] || document.createElement('div');
-                    imgContainer.className = 'img-container';
-    
-                    let img = imgContainer.children[0] || new Image();
-                    img.src = lotWaferUrls[imageIndex].image;
-                    img.alt = "Wafer Image " + (imageIndex + 1);
-                    img.className = "img-fluid";
-    
-                    let label = imgContainer.children[1] || document.createElement('p');
-                    label.className = 'text-center';
-                    label.textContent = lotWaferUrls[imageIndex].lot_wafer;
-    
-                    if (!imgContainer.children[0]) imgContainer.appendChild(img); // Append img if it doesn't exist
-                    if (!imgContainer.children[1]) imgContainer.appendChild(label); // Append label if it doesn't exist
-                    if (!col.children[0]) col.appendChild(imgContainer); // Append imgContainer if it doesn't exist
-                } else {
-                    // Handle cases where the image data is not available
-                    col.innerHTML = `<div class="img-container">
-                        <div class="placeholder-img img-fluid"></div>
-                    </div>`;
+                        let img = imgContainer.children[0] || new Image();
+                        img.src = lotWaferUrls[imageIndex].image;
+                        img.alt = "Wafer Image " + (imageIndex + 1);
+                        img.className = "img-fluid";
+        
+                        let label = imgContainer.children[1] || document.createElement('p');
+                        label.className = 'text-center';
+                        label.textContent = lotWaferUrls[imageIndex].lot_wafer;
+        
+                        if (!imgContainer.children[0]) imgContainer.appendChild(img); // Append img if it doesn't exist
+                        if (!imgContainer.children[1]) imgContainer.appendChild(label); // Append label if it doesn't exist
+                        if (!col.children[0]) col.appendChild(imgContainer); // Append imgContainer if it doesn't exist
+                    } else {
+                        // Handle cases where the image data is not available
+                        col.innerHTML = `<div class="img-container">
+                            <div class="placeholder-img img-fluid"></div>
+                        </div>`;
+                    }
+                    if (!row.children[j]) row.appendChild(col); // Append column if it doesn't exist
                 }
-                if (!row.children[j]) row.appendChild(col); // Append column if it doesn't exist
+                if (!container.children[i]) container.appendChild(row); // Append row if it doesn't exist
             }
-            if (!container.children[i]) container.appendChild(row); // Append row if it doesn't exist
         }
-    }
     
     </script>
     {% endblock %}
