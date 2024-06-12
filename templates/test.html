@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Highcharts Stacked Grouped Bar Chart</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+<div id="container" style="width:100%; height:400px;"></div>
+
+<script>
+fetch('/data')
+    .then(response => response.json())
+    .then(data => {
+        const months = [...new Set(data.map(item => item.month))];
+        const processes = [...new Set(data.map(item => item.process_id))];
+
+        const series = [];
+
+        processes.forEach(process => {
+            series.push({
+                name: `${process} - N`,
+                data: months.map(month => {
+                    const item = data.find(d => d.process_id === process && d.month === month);
+                    return item ? item.N : 0;
+                }),
+                stack: process
+            });
+            series.push({
+                name: `${process} - Y`,
+                data: months.map(month => {
+                    const item = data.find(d => d.process_id === process && d.month === month);
+                    return item ? item.Y : 0;
+                }),
+                stack: process
+            });
+        });
+
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Stacked Grouped Bar Chart',
+                align: 'left'
+            },
+            xAxis: {
+                categories: months
+            },
+            yAxis: {
+                allowDecimals: false,
+                min: 0,
+                title: {
+                    text: 'Values'
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + this.y + '<br/>' + 'Total: ' + this.point.stackTotal;
+                }
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+            series: series
+        });
+    });
+</script>
+</body>
+</html>
