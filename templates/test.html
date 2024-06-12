@@ -24,17 +24,19 @@ fetch('/data')
                 name: `${process} - N`,
                 data: months.map(month => {
                     const item = data.find(d => d.process_id === process && d.month === month);
-                    return item ? item.N : 0;
+                    return item ? { y: item.N, process_id: process } : { y: 0, process_id: process };
                 }),
-                stack: process
+                stack: process,
+                color: '#7cb5ec'  // Color for N values
             });
             series.push({
                 name: `${process} - Y`,
                 data: months.map(month => {
                     const item = data.find(d => d.process_id === process && d.month === month);
-                    return item ? item.Y : 0;
+                    return item ? { y: item.Y, process_id: process } : { y: 0, process_id: process };
                 }),
-                stack: process
+                stack: process,
+                color: '#434348'  // Color for Y values
             });
         });
 
@@ -63,7 +65,13 @@ fetch('/data')
             },
             plotOptions: {
                 column: {
-                    stacking: 'normal'
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function() {
+                            return this.point.process_id;
+                        }
+                    }
                 }
             },
             series: series
