@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Label CRUD</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .scrollable-list {
+            max-height: 300px; /* Adjust this height as needed */
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <section class="vh-100" style="background-color: #e2d5de;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+                            <h6 class="mb-3">Label List</h6>
+                            <form class="d-flex justify-content-center align-items-center mb-4" id="label-form">
+                                <div class="form-outline flex-fill">
+                                    <input type="text" id="labelInput" class="form-control form-control-lg"/>
+                                    <label class="form-label" for="labelInput">Label Type</label>
+                                </div>
+                                <button type="submit" onclick="addLabel(event)" class="btn btn-primary btn-lg ms-2">Add</button>
+                                <button type="button" onclick="updateLabel()" class="btn btn-secondary btn-lg ms-2">Update</button>
+                                <button type="button" onclick="deleteLabel()" class="btn btn-danger btn-lg ms-2">Delete</button>
+                            </form>
+                            <ul class="list-group mb-0 scrollable-list" id="labels">
+                                {% for label in labels %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ label.id }}">
+                                    <span>{{ label.label_type }}</span>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="selectLabel({{ label.id }}, '{{ label.label_type }}')">Select</button>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let selectedLabelId = null;
+
+        function selectLabel(id, labelType) {
+            selectedLabelId = id;
+            document.getElementById("labelInput").value = labelType;
+        }
+
+        function addLabel(event) {
+            event.preventDefault();
+            const labelType = document.getElementById("labelInput").value;
+            fetch('/labels/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'label_type': labelType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const ul = document.getElementById("labels");
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.setAttribute("data-id", data.id);
+                li.innerHTML = `<span>${data.label_type}</span>
+                                <button class="btn btn-outline-primary btn-sm" onclick="selectLabel(${data.id}, '${data.label_type}')">Select</button>`;
+                ul.appendChild(li);
+                document.getElementById("labelInput").value = '';
+            });
+        }
+
+        function updateLabel() {
+            if (selectedLabelId) {
+                const labelType = document.getElementById("labelInput").value;
+                fetch(`/labels/${selectedLabelId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'label_type': labelType })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const li = document.querySelector(`li[data-id='${selectedLabelId}']`);
+                    li.innerHTML = `<span>${data.label_type}</span>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="selectLabel(${data.id}, '${data.label_type}')">Select</button>`;
+                    document.getElementById("labelInput").value = '';
+                    selectedLabelId = null;
+                });
+            } else {
+                alert("Please select a label to update.");
+            }
+        }
+
+        function deleteLabel() {
+            if (selectedLabelId) {
+                fetch(`/labels/${selectedLabelId}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    const li = document.querySelector(`li[data-id='${selectedLabelId}']`);
+                    li.remove();
+                    document.getElementById("labelInput").value = '';
+                    selectedLabelId = null
