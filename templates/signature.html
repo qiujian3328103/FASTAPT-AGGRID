@@ -34,3 +34,110 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signature CRUD</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <section class="vh-100" style="background-color: #e2d5de;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+                            <h6 class="mb-3">Signature List</h6>
+                            <form class="d-flex justify-content-center align-items-center mb-4" id="signature-form">
+                                <div class="form-outline flex-fill">
+                                    <input type="text" id="signatureInput" class="form-control form-control-lg"/>
+                                    <label class="form-label" for="signatureInput">Signature Type</label>
+                                </div>
+                                <button type="submit" onclick="addSignature(event)" class="btn btn-primary btn-lg ms-2">Add</button>
+                                <button type="button" onclick="updateSignature()" class="btn btn-secondary btn-lg ms-2">Update</button>
+                                <button type="button" onclick="deleteSignature()" class="btn btn-danger btn-lg ms-2">Delete</button>
+                            </form>
+                            <ul class="list-group mb-0" id="signatures">
+                                {% for signature in signatures %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ signature.id }}">
+                                    <span>{{ signature.signature_type }}</span>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="selectSignature({{ signature.id }}, '{{ signature.signature_type }}')">Select</button>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let selectedSignatureId = null;
+
+        function selectSignature(id, signatureType) {
+            selectedSignatureId = id;
+            document.getElementById("signatureInput").value = signatureType;
+        }
+
+        function addSignature(event) {
+            event.preventDefault();
+            const signatureType = document.getElementById("signatureInput").value;
+            fetch('/signatures/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'signature_type': signatureType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const ul = document.getElementById("signatures");
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.setAttribute("data-id", data.id);
+                li.innerHTML = `<span>${data.signature_type}</span>
+                                <button class="btn btn-outline-primary btn-sm" onclick="selectSignature(${data.id}, '${data.signature_type}')">Select</button>`;
+                ul.appendChild(li);
+                document.getElementById("signatureInput").value = '';
+            });
+        }
+
+        function updateSignature() {
+            if (selectedSignatureId) {
+                const signatureType = document.getElementById("signatureInput").value;
+                fetch(`/signatures/${selectedSignatureId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'signature_type': signatureType })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const li = document.querySelector(`li[data-id='${selectedSignatureId}']`);
+                    li.innerHTML = `<span>${data.signature_type}</span>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="selectSignature(${data.id}, '${data.signature_type}')">Select</button>`;
+                    document.getElementById("signatureInput").value = '';
+                    selectedSignatureId = null;
+                });
+            } else {
+                alert("Please select a signature to update.");
+            }
+        }
+
+        function deleteSignature() {
+            if (selectedSignatureId) {
+                fetch(`/signatures/${selectedSignatureId}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    const li = document.querySelector(`li[data-id='${selectedSignatureId}']`);
+                    li.remove();
+                    document.getElementById("signatureInput").value = '';
+                    selectedSignatureId = null;
+                });
+            } else {
+                alert("Please select a signature to delete.");
+            }
+        }
+    </script>
+</body>
+</html>
