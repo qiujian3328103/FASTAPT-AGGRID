@@ -102,4 +102,12 @@
                     const li = document.querySelector(`li[data-id='${selectedLabelId}']`);
                     li.remove();
                     document.getElementById("labelInput").value = '';
-                    selectedLabelId = null
+                    selectedLabelId = null;
+                });
+            } else {
+                alert("Please select a label to delete.");
+            }
+        }
+    </script>
+</body>
+</html>
