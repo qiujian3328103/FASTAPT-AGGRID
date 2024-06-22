@@ -156,6 +156,6 @@ async def submit_swly_label_data(request: Request, lot_id: str = Form(...), wafe
     db.query(SWLY_LOW_YIELD_TABLE).filter(SWLY_LOW_YIELD_TABLE.lot_id == lot_id).update({SWLY_LOW_YIELD_TABLE.swly_mark: last_flag}, synchronize_session=False)
     db.commit()
     # Notify clients of the update
-    await notify_clients("update")
+    # await notify_clients("update")
 
     return JSONResponse(content={"message": "SWLY label data submitted successfully"})

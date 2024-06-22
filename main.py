@@ -52,7 +52,7 @@ app.include_router(page_setting.router)
 # async def home(request: Request):
 #     data = openfile("home.md")
 #     return templates.TemplateResponse("page.html", {"request": request, "data": data})
-app.websocket("/ws")(websocket_endpoint)
+# app.websocket("/ws")(websocket_endpoint)
 
 
 @app.get("/page/{page_name}", response_class=HTMLResponse)
@@ -130,7 +130,6 @@ async def home(request: Request, db: Session = Depends(get_db)):
 @app.post("/form_submit", response_class=HTMLResponse)
 async def update_data(request: Request, processIds: list = Form(...), stepId: str = Form(None), sigma: str = Form(None), 
                       startDate: str = Form(None), endDate: str = Form(None), db: Session = Depends(get_db)):
-    print(processIds, stepId, sigma)
     # Read CSV data
     # df = pd.read_csv(TEST_DATA_SET_URL)  # Change the path to your CSV file
     query_result = db.query(SWLY_LOW_YIELD_TABLE).all()
@@ -139,7 +138,7 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     
     # Filter DataFrame based on selected process IDs
     filtered_df = df[df['lot_id'].isin(processIds)]
-    
+    print(filtered_df)
     # Convert DataFrame to JSON for ag-Grid
     # column_defs = [{"headerName": col, "field": col} for col in filtered_df.columns]
     
@@ -173,7 +172,7 @@ async def update_data(request: Request, processIds: list = Form(...), stepId: st
     return JSONResponse(content={"rowData": row_data})
 
 
-@app.post("/notify_update")
-async def notify_update():
-    await notify_clients("update")
-    return {"message": "Clients notified"}
+# @app.post("/notify_update")
+# async def notify_update():
+#     await notify_clients("update")
+#     return {"message": "Clients notified"}

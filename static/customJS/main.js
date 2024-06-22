@@ -19,14 +19,53 @@ const swlyLabelCellClassRules = {
     "rag-green": (params) => params.value !== "M3-J3 Short",
 };
 
+const CellClassRules = {
+    "rag-1": (params) => params.value === 1,
+    "rag-2": (params) => params.value === 2,
+    "rag-3": (params) => params.value === 3,
+    "rag-4": (params) => params.value === 4,
+    "rag-5": (params) => params.value === 5,
+    "rag-6": (params) => params.value === 6,
+    "rag-7": (params) => params.value === 7,
+    "rag-8": (params) => params.value === 8,
+};
+
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    const yldValues = rowData.map(row => row.yld);
+    const minYld = Math.min(...yldValues);
+    const maxYld = Math.max(...yldValues);
+    const step = (maxYld - minYld) / 8;
+
+    console.log(maxYld);
+    console.log(minYld);
+
+    // Define dynamic cell class rules for yld
+    const yldCellClassRules = {
+        "rag-1": (params) => params.value >= minYld && params.value < (minYld + step),
+        "rag-2": (params) => params.value >= (minYld + step) && params.value < (minYld + 2 * step),
+        "rag-3": (params) => params.value >= (minYld + 2 * step) && params.value < (minYld + 3 * step),
+        "rag-4": (params) => params.value >= (minYld + 3 * step) && params.value < (minYld + 4 * step),
+        "rag-5": (params) => params.value >= (minYld + 4 * step) && params.value < (minYld + 5 * step),
+        "rag-6": (params) => params.value >= (minYld + 5 * step) && params.value < (minYld + 6 * step),
+        "rag-7": (params) => params.value >= (minYld + 6 * step) && params.value < (minYld + 7 * step),
+        "rag-8": (params) => params.value >= (minYld + 7 * step)
+    };
+
+
+
     gridOptions = {
         columnDefs: columnDefs.map(col => {
             if (col.field === "swly_label") {
                 return {
                     ...col,
                     cellClassRules: swlyLabelCellClassRules,
+                };
+            }else if (col.field === "yld") {
+                return {
+                    ...col,
+                    cellClassRules: yldCellClassRules,
                 };
             }
             return col;
@@ -64,21 +103,21 @@ document.addEventListener('DOMContentLoaded', function() {
     gridApi = agGrid.createGrid(gridDiv, gridOptions);
 
     // WebSocket setup
-    const socket = new WebSocket("ws://localhost:8080/ws");
-    socket.onmessage = function(event) {
-        if (event.data === "update") {
-            fetch("/form_submit", {
-                method: "POST",
-                body: new FormData(document.getElementById("dataForm"))
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (gridApi) {
-                    gridApi.setGridOption('rowData', data);
-                }
-            });
-        }
-    };
+    // const socket = new WebSocket("ws://localhost:8080/ws");
+    // socket.onmessage = function(event) {
+    //     if (event.data === "update") {
+    //         fetch("/form_submit", {
+    //             method: "POST",
+    //             body: new FormData(document.getElementById("dataForm"))
+    //         })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (gridApi) {
+    //                 gridApi.setGridOption('rowData', data);
+    //             }
+    //         });
+    //     }
+    // };
 });
 
 $(document).ready(function() {
