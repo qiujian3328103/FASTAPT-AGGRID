@@ -2,44 +2,14 @@
 <html>
 <head>
     <title>Signature CRUD</title>
-    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
-    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css">
-    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
-</head>
-<body>
-    <h1>Signature CRUD</h1>
-    <div id="myGrid" class="ag-theme-alpine" style="height: 500px; width: 600px;"></div>
-    <script>
-        const columnDefs = [
-            { headerName: "ID", field: "id", sortable: true, filter: true },
-            { headerName: "Signature Type", field: "signature_type", sortable: true, filter: true }
-        ];
-
-        const rowData = {{ signatures | tojson }};
-
-        const gridOptions = {
-            columnDefs: columnDefs,
-            rowData: rowData,
-            onGridReady: function() {
-                fetch('/signatures')
-                    .then(response => response.json())
-                    .then(data => gridOptions.api.setRowData(data));
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const eGridDiv = document.querySelector('#myGrid');
-            new agGrid.Grid(eGridDiv, gridOptions);
-        });
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Signature CRUD</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .scrollable-list {
+            max-height: 300px; /* Adjust this height as needed */
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
     <section class="vh-100" style="background-color: #e2d5de;">
@@ -58,7 +28,7 @@
                                 <button type="button" onclick="updateSignature()" class="btn btn-secondary btn-lg ms-2">Update</button>
                                 <button type="button" onclick="deleteSignature()" class="btn btn-danger btn-lg ms-2">Delete</button>
                             </form>
-                            <ul class="list-group mb-0" id="signatures">
+                            <ul class="list-group mb-0 scrollable-list" id="signatures">
                                 {% for signature in signatures %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ signature.id }}">
                                     <span>{{ signature.signature_type }}</span>
