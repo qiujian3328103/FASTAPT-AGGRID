@@ -13,11 +13,14 @@
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item {{'active' if active_page == 'unsplash' }}">
-                    <a class="nav-link" href="/unsplash">Unsplash</a>
-                </li>
-                <li class="nav-item {{'active' if active_page == 'twoforms' }}">
-                    <a class="nav-link" href="/twoforms">Two forms</a>
+                <li class="nav-item dropdown {{'active' if active_page == 'unsplash' or active_page == 'twoforms' }}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        More
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/unsplash">Unsplash</a></li>
+                        <li><a class="dropdown-item" href="/twoforms">Two forms</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item {{'active' if active_page == 'swly_list' }}">
                     <a class="nav-link" href="/swly_list">Swly List</a>
