@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% set active_page = "alarm_analysis" %}
+{% block title %}Login Page{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    <main role="main" style="padding-top: 70px;">
+        <div class="row mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <form id="dataForm_alarm">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="row mb-2">
+                                    <div class="col-md-3">
+                                        <label for="processId">Process ID</label>
+                                        <select id="processId" class="form-control select2" name="processId" multiple>
+                                            {% for process_id in initial_data.process_ids %}
+                                                {% if process_id in initial_data.selected_process_ids %}
+                                                    <option value="{{ process_id }}" selected>{{ process_id }}</option>
+                                                {% else %}
+                                                    <option value="{{ process_id }}">{{ process_id }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="labels">Labels</label>
+                                        <select id="labels" class="form-control select2" name="labels" multiple>
+                                            {% for label in initial_data.labels %}
+                                                <option value="{{ label }}">{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="areas">Areas</label>
+                                        <select id="areas" class="form-control select2" name="areas" multiple>
+                                            {% for area in initial_data.areas %}
+                                                <option value="{{ area }}">{{ area }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-3">
+                                        <label for="lotid">Lot ID</label>
+                                        <select id="lotid" class="form-control" name="lotid" multiple>
+                                            <!-- Lot ID options will be dynamically populated -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end justify-content-end">
+                                <label for="submitButton"></label>
+                                <button type="submit" class="btn btn-primary mt-md-4">Retrieve</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', path='customJS/alarm.js') }}"></script>
+{% endblock %}
