@@ -40,10 +40,14 @@
             var data = {{ bar_data | safe }};
             Highcharts.chart('highchart-bar-chart', {
                 chart: {
-                    type: 'column'
+                    type: 'column',
+                    zoomType: 'x'  // 添加缩放功能
                 },
                 title: {
-                    text: 'Monthly Wafer Counts by SWLY Label'
+                    text: 'Monthly Wafer Counts by SWLY Label',
+                    style: {
+                        fontSize: '12px'  // 设置标题字体大小为12px
+                    }
                 },
                 xAxis: {
                     categories: Object.keys(data),
@@ -70,10 +74,30 @@
                         }
                     }
                 },
+                legend: {
+                    align: 'center',
+                    verticalAlign: 'top',
+                    layout: 'horizontal',
+                    maxHeight: 60,  // 设置最大高度
+                    navigation: {
+                        activeColor: '#3E576F',
+                        animation: true,
+                        arrowSize: 12,
+                        inactiveColor: '#CCC',
+                        style: {
+                            fontWeight: 'bold',
+                            color: '#333',
+                            fontSize: '12px'
+                        }
+                    }
+                },
                 series: Object.keys(data[Object.keys(data)[0]]).map(swly_label => ({
                     name: swly_label,
                     data: Object.keys(data).map(month => data[month][swly_label] || 0)
-                }))
+                })),
+                rangeSelector: {  // 添加范围选择器
+                    selected: 1
+                }
             });
 
             var rawData = {{ line_data | safe }};
