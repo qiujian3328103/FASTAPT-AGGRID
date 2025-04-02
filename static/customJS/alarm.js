@@ -26,7 +26,46 @@ $(document).ready(function() {
         }
     }
 
+    function updateGrids() {
+        const selectedAreas = $('#areas').val();
+
+        // Clear existing grids
+        $('#grids-container').empty();
+
+        if (selectedAreas.length > 0) {
+            selectedAreas.forEach(area => {
+                // Create a container for each grid
+                const gridDiv = document.createElement('div');
+                gridDiv.classList.add('ag-theme-alpine');
+                gridDiv.style.height = '200px';
+                gridDiv.style.width = '100%';
+                gridDiv.style.marginBottom = '20px';
+                $('#grids-container').append(gridDiv);
+
+                // Fetch data for the selected area
+                fetch(`/get_area_data?${new URLSearchParams({area: area})}`)
+                .then(response => response.json())
+                .then(data => {
+                    new agGrid.Grid(gridDiv, {
+                        columnDefs: data.columnDefs,
+                        rowData: data.rowData,
+                        defaultColDef: {
+                            sortable: true,
+                            filter: true,
+                            resizable: true
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching area data:', error));
+            });
+        }
+    }
+
     $('#processId, #labels').on('change', function() {
         updateLotIdOptions();
+    });
+
+    $('#areas').on('change', function() {
+        updateGrids();
     });
 });

@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% set active_page = "alarm_analysis" %}
-{% block title %}Login Page{% endblock %}
+{% block title %}Alarm Analysis{% endblock %}
 
 {% block head %}
     {{ super() }}
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css">
 {% endblock %}
 
 {% block page_content %}
@@ -62,10 +64,13 @@
                 </div>
             </div>
         </div>
+
+        <div id="grids-container"></div>
     </main>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
     <script src="{{ url_for('static', path='customJS/alarm.js') }}"></script>
 {% endblock %}

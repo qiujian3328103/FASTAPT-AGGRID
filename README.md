@@ -27,7 +27,7 @@ pip install -r requirements.txt
 pip freeze > requirements.txt
 
 # start app 
-uvicorn app.main:app --reload --port 8080
+uvicorn main:app --reload --port 8080
 
 # error router no module named "app.libaray.helper"
 Windows users they can write,

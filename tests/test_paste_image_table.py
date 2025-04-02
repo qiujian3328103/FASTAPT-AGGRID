@@ -17,7 +17,7 @@ app.layout = html.Div([
         fac.AntdCol([
             fuc.FefferyDiv(
                 'Mouse hover here and press Ctrl + V to paste an image',
-                id='image-paste-container',
+                id='image-paste-container',  # Add id for hover effect
                 shadow='hover-shadow',
                 style={
                     'height': '200px',
@@ -46,7 +46,7 @@ app.layout = html.Div([
                 locale='en-us',
                 maxHeight=200,
                 pagination={'pageSize': 10, 'showSizeChanger': True, 'pageSizeOptions': [5, 10, 20]},
-                style={'width': '100%'}
+                style={'width': '100%'},
             ), 
         ], span=21),
     ]),

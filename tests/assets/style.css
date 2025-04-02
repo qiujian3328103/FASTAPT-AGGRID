@@ -1,5 +1,13 @@
-
-
 .hover-shadow:hover {
     box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.6);  /* Box-shadow color on hover */
 }
+
+#image-paste-container:hover {
+    box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.6);  /* Box-shadow color on hover */
+}
+
+#image-table .ant-table-thead > tr > th {
+    font-weight: bold;  /* Change font weight to bold */
+    padding: 8px;  /* Adjust padding to reduce header width */
+}
+

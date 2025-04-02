@@ -6,11 +6,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset, page_setting, alarm
+from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset, page_setting, alarm, homepage
 from app.library.models import SWLY_LOW_YIELD_TABLE
 from sqlalchemy.orm import Session 
 from app.library.database import get_db
 from app.library.websocket_manager import websocket_endpoint, notify_clients
+# from fastapi_babel import Babel, gettext as _
+# from fastapi_babel.middleware import I18nMiddleware
 
 # from starlette.middleware.sessions import SessionMiddleware
 # from fastapi_auth_middleware import AuthMiddleware
@@ -18,15 +20,22 @@ import pandas as pd
 import json 
 import os 
 from config import TEST_DATA_SET_URL, TEST_IMAGE_URL
+
 app = FastAPI()
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # Adjust in production
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+# babel = Babel(app)
+
+# babel.default_locale = 'en'
+
+# app.add_middleware(I18nMiddleware, babel=babel)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 templates = CustomJinja2Templates(directory="templates")
 # Adding middleware for session management
@@ -49,6 +58,9 @@ app.include_router(view_wafermap.router)
 app.include_router(reset.router)
 app.include_router(page_setting.router)
 app.include_router(alarm.router)
+app.include_router(homepage.router)
+
+
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
 #     data = openfile("home.md")

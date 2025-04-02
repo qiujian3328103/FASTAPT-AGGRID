@@ -45,45 +45,43 @@
 
     /* The customcheck */
     .customcheck {
-        display: block;
+        display: flex;
+        align-items: center;
         position: relative;
-        padding-left: 20px;
-        margin-bottom: 0px;
+        padding-left: 25px; /* 增加左侧空间给复选框 */
         cursor: pointer;
-        font-size: 22px;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
+        font-size: 14px;
         user-select: none;
+        height: 38px;
     }
 
     /* Hide the browser's default checkbox */
     .customcheck input {
         position: absolute;
         opacity: 0;
-        cursor: pointer;
+        cursor: pinter;
     }
 
     /* Create a custom checkbox */
     .checkmark {
         position: absolute;
-        top: 0;
         left: 0;
-        height: 25px;
-        width: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 16px;
+        width: 16px;
         background-color: #eee;
-        border-radius: 5px;
+        border-radius: 4px;
     }
 
     /* On mouse-over, add a grey background color */
-    .customcheck:hover input~.checkmark {
+    .customcheck:hover input ~ .checkmark {
         background-color: #ccc;
-    }
+    } ws 
 
     /* When the checkbox is checked, add a blue background */
-    .customcheck input:checked~.checkmark {
+    .customcheck input:checked ~ .checkmark {
         background-color: #02cf32;
-        border-radius: 5px;
     }
 
     /* Create the checkmark/indicator (hidden when not checked) */
@@ -91,24 +89,23 @@
         content: "";
         position: absolute;
         display: none;
-    }
-
-    /* Show the checkmark when checked */
-    .customcheck input:checked~.checkmark:after {
-        display: block;
-    }
-
-    /* Style the checkmark/indicator */
-    .customcheck .checkmark:after {
-        left: 9px;
-        top: 5px;
+        left: 6px;
+        top: 2px;
         width: 5px;
         height: 10px;
         border: solid white;
-        border-width: 0 3px 3px 0;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
+        border-width: 0 2px 2px 0;
         transform: rotate(45deg);
+    }
+
+    /* Show the checkmark when checked */
+    .customcheck input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    .scrollable-list {
+        max-height: 400px;
+        overflow-y: auto;
     }
 </style>
 <style>
@@ -274,12 +271,25 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="row-mb-3">
+                            <div class="row mb-3">
                                 <label for="exampleFormControlTextarea1" class="form-label">Description</label>
                                 <textarea class="form-control" required name="description"
                                     id="exampleFormControlTextarea1" rows="3">{{description}}</textarea>
                                 <div id="help" class="form-text">Please provide complete Job
                                     description,requirements,perks and benefits.</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#">Action</a></li>
+                                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#">Separated link</a></li>
+                                    </ul>
+                                    <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
@@ -291,20 +301,21 @@
                     <span class="text-primary">Top Failure Bins</span>
                     <span class="badge bg-primary rounded-pill">3</span>
                 </h4>
-
-                <ul class="list-group mb-3">
-                    {% for item in top_bin_items %}
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <h6 class="my-0">{{ item.BIN_ITEM }}</h6>
-                            <small class="text-muted">Dynamic BIN_GROUP</small>
-                        </div>
-                        <span class="text-muted">{{ item.BIN_VALUE }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <!-- 使用 CSS 类包装 -->
+                <div class="scrollable-list">
+                    <ul class="list-group mb-3">
+                        {% for item in top_bin_items %}
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <h6 class="my-0">{{ item.BIN_ITEM }}</h6>
+                                <small class="text-muted">Dynamic BIN_GROUP</small>
+                            </div>
+                            <span class="text-muted">{{ item.BIN_VALUE }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
-
         </div>
 
     </div>
@@ -636,6 +647,20 @@
             });
         });
     });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const dropdownButton = document.getElementById('dropdownMenuButton');
+
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function (event) {
+            event.preventDefault();
+            dropdownButton.textContent = this.textContent;
+        });
+    });
+});
 </script>
 
 {% endblock %}

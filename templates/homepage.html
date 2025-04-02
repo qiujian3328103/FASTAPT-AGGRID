@@ -1,0 +1,84 @@
+{% extends "base_layui.html" %}
+
+{% block title %}SWLY Tracking{% endblock %}
+
+{% block page_content %}
+<main role="main" style="padding: 20px;">
+    <form class="layui-form" id="dataForm" action="/form_submit" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="processId">Process ID</label>
+            <div class="layui-input-inline">
+                <select id="processId" name="processIds" lay-search multiple>
+                    {% for process_id in initial_data.process_ids %}
+                        {% if process_id in initial_data.selected_process_ids %}
+                            <option value="{{ process_id }}" selected>{{ process_id }}</option>
+                        {% else %}
+                            <option value="{{ process_id }}">{{ process_id }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <label class="layui-form-label" for="stepId">Step ID</label>
+            <div class="layui-input-inline">
+                <select id="stepId" name="stepId" lay-search>
+                    {% for step_id in initial_data.step_ids %}
+                        {% if step_id == initial_data.selected_step_id %}
+                            <option value="{{ step_id }}" selected>{{ step_id }}</option>
+                        {% else %}
+                            <option value="{{ step_id }}">{{ step_id }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <label class="layui-form-label" for="sigma">Sigma</label>
+            <div class="layui-input-inline">
+                <select id="sigma" name="sigma" lay-search>
+                    {% for sigma in initial_data.sigmas %}
+                        {% if sigma == initial_data.selected_sigma %}
+                            <option value="{{ sigma }}" selected>{{ sigma }}</option>
+                        {% else %}
+                            <option value="{{ sigma }}">{{ sigma }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <label class="layui-form-label" for="startDate">Start Date</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="startDate" name="startDate" placeholder="yyyy-MM-dd">
+            </div>
+            <label class="layui-form-label" for="endDate">End Date</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="endDate" name="endDate" placeholder="yyyy-MM-dd">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn">Retrieve</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <p>Click on the column headers to sort the data.</p>
+        </div>
+    </div>
+    <div id="ag-grid" class="ag-theme-alpine" style="height: 800px; width: 100%;"></div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Make the template variables available to the external JS
+        var columnDefs = {{ columnDefs | safe }};
+        var rowData = {{ rowData | safe }};
+        
+        // Initialize layui form
+        layui.use(['form'], function(){
+            var form = layui.form;
+            form.render(); // Re-render the form
+        });
+    </script>
+    <script src="{{ url_for('static', path='customJS/main.js') }}"></script>
+{% endblock %}
