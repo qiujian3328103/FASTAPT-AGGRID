@@ -6,7 +6,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.library import openfile
 from app.library.helper import CustomJinja2Templates
-from app.routers import info, twoforms, unsplash, accordion, swly_recorder, lot_review, swly_naming, swly_analysis,swly_listing, login, auth, view_wafermap, reset, page_setting, alarm, homepage
+from app.routers import (info, twoforms, unsplash, accordion, swly_recorder, 
+                         lot_review, swly_naming, swly_analysis,swly_listing, 
+                         login, auth, view_wafermap, reset, page_setting, 
+                         alarm, homepage, upload, release_notes)
 from app.library.models import SWLY_LOW_YIELD_TABLE
 from sqlalchemy.orm import Session 
 from app.library.database import get_db
@@ -59,7 +62,8 @@ app.include_router(reset.router)
 app.include_router(page_setting.router)
 app.include_router(alarm.router)
 app.include_router(homepage.router)
-
+app.include_router(upload.router)
+app.include_router(release_notes.router)
 
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):

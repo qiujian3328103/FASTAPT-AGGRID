@@ -137,3 +137,11 @@ class SWLY_LOW_YIELD_TABLE(Base):
             "swly_label": self.fail_bin,
         }
     
+    
+class ProductInfo(Base):
+    __tablename__ = "product_info"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    process_id = Column(String, index=True)
+    step_seq = Column(Integer)
+    pgm_id = Column(String)

@@ -75,9 +75,9 @@
                     }
                 },
                 legend: {
-                    align: 'center',
-                    verticalAlign: 'top',
-                    layout: 'horizontal',
+                    align: 'right',  // 将图例放在右侧
+                    verticalAlign: 'middle',  // 垂直居中
+                    layout: 'vertical',  // 垂直布局
                     maxHeight: 60,  // 设置最大高度
                     navigation: {
                         activeColor: '#3E576F',
@@ -150,6 +150,15 @@
                         dataLabels: {
                             enabled: true
                         }
+                    }
+                },
+                legend: {
+                    align: 'right',  // 将图例放在右侧
+                    verticalAlign: 'middle',  // 垂直居中
+                    layout: 'vertical',  // 垂直布局
+                    x: -50,  // 向右移动图例以提供更多空间
+                    itemStyle: {
+                        fontSize: '10px'  // 减小图例字体大小
                     }
                 },
                 series: seriesData

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% set active_page = "upload" %}
+{% block title %}Upload CSV Data{% endblock %}
+
+{% block page_content %}
+<main role="main" class="container mt-4" style="padding-top: 70px;">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="mb-4">Upload CSV Data</h1>
+            
+            <div class="card shadow">
+                <div class="card-body">
+                    <form action="/upload" method="post" class="form">
+                        <div class="form-group mb-4">
+                            <label for="csvData" class="form-label"><strong>Paste CSV Data Below:</strong></label>
+                            <textarea class="form-control" id="csvData" name="csvData" rows="10" 
+                                      placeholder="Format: process_id,step_seq,pgm_id" 
+                                      style="resize: vertical;"></textarea>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">Upload Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if message %}
+            <div class="alert alert-info mt-4">
+                {{ message }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}
